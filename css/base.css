@@ -1,0 +1,155 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--cream);
+  color: var(--charcoal);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.screen {
+  display: none;
+  min-height: 100vh;
+  animation: fadeIn 0.4s ease;
+}
+
+.screen.active {
+  display: block;
+}
+
+/* ─────────────────────────────
+   SCREENS
+───────────────────────────── */
+
+.screen {
+  display: none;
+  min-height: 100vh;
+  animation: fadeIn 0.4s ease;
+}
+
+.screen.active {
+  display: flex;
+}
+
+/* ─────────────────────────────
+   LANDING
+───────────────────────────── */
+
+#screen-landing {
+  background: var(--charcoal);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* FONDO */
+
+.landing-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* BLOBS */
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.35;
+}
+
+.blob-1 {
+  width: 480px;
+  height: 480px;
+  background: #c4826a;
+  top: -100px;
+  left: -120px;
+
+  animation: floatBlob 8s ease-in-out infinite;
+}
+
+.blob-2 {
+  width: 360px;
+  height: 360px;
+  background: #8aab9a;
+  bottom: -80px;
+  right: -80px;
+
+  animation: floatBlob 11s ease-in-out infinite reverse;
+}
+
+.blob-3 {
+  width: 280px;
+  height: 280px;
+  background: #f2d9d0;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  animation: floatBlob 7s ease-in-out infinite 2s;
+}
+
+/* CONTENIDO */
+
+.landing-content {
+  position: relative;
+  z-index: 1;
+
+  text-align: center;
+  color: var(--cream);
+
+  padding: 2rem;
+}
+
+/* LOGO */
+
+.logo-mark {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
+
+  color: var(--blush);
+
+  animation: pulse 3s ease-in-out infinite;
+}
+
+/* TITULO */
+
+.landing-title {
+  font-family: var(--font-display);
+
+  font-size: clamp(3.5rem, 10vw, 6rem);
+
+  font-weight: 700;
+
+  letter-spacing: -1px;
+
+  line-height: 1;
+
+  margin-bottom: 1rem;
+}
+
+/* SUBTITULO */
+
+.landing-sub {
+  font-size: 1.1rem;
+
+  color: rgba(250, 246, 241, 0.65);
+
+  margin-bottom: 3rem;
+
+  font-weight: 300;
+
+  letter-spacing: 0.05em;
+}
+
