@@ -4,8 +4,47 @@ import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/s
 import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/css/components.css"
 import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/css/auth.css"
 import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/css/responsive.css"
+import { Link } from "react-router"
+import { useState } from "react"
 
 export default function Recovery(){
+    const [isShown, setIsShown] = useState(false);
+
+    const eventRecovery = () => {
+        setIsShown(true);
+    }
+
+    /*
+    function eventRecovery(){
+
+        return (
+            <>
+                <div id="recovery-success" className="hidden">
+
+                    <div className="success-box">
+                       <div className="success-icon">
+                            ✉️
+                        </div>
+
+                        <h3>
+                            ¡Correo enviado!
+                        </h3>
+
+                        <p>
+                            Revisa tu bandeja de entrada y sigue las instrucciones
+                            para restablecer tu contraseña.
+                        </p>
+
+                        <Link to="/" className="btn-ghost">
+                            Volver al inicio
+                        </Link>
+                    </div>
+                </div>
+            </>
+        )
+    }
+    */
+        
     return (
         <nav>
             <title>Recuperar acceso - Sentir</title>
@@ -16,9 +55,9 @@ export default function Recovery(){
 
                     <div className="auth-panel">
 
-                        <button className="back-btn">
+                        <Link to="/login" className="back-btn">
                             ← Volver
-                        </button>
+                        </Link>
 
                         <div className="auth-header">
 
@@ -52,34 +91,32 @@ export default function Recovery(){
 
                             </div>
 
-                            <button className="btn-primary full">
+                            <button className="btn-primary full" onClick={eventRecovery}>
                                 Enviar enlace
                             </button>
-                        </div>
 
-                        <div id="recovery-success" className="hidden">
+                            <div style={{display: isShown ? 'block' : "none"}}>
+                                <div id="recovery-success" className="hidden">
+                                    <div className="success-box">
+                                        <div className="success-icon">
+                                            ✉️
+                                        </div>
 
-                            <div className="success-box">
+                                        <h3>
+                                            ¡Correo enviado!
+                                        </h3>
 
-                                <div className="success-icon">
-                                ✉️
+                                        <p>
+                                            Revisa tu bandeja de entrada y sigue las instrucciones
+                                            para restablecer tu contraseña.
+                                        </p>
+
+                                        <Link to="/" className="btn-ghost">
+                                            Volver al inicio
+                                        </Link>
+                                    </div>
                                 </div>
-
-                                <h3>
-                                ¡Correo enviado!
-                                </h3>
-
-                                <p>
-                                Revisa tu bandeja de entrada y sigue las instrucciones
-                                para restablecer tu contraseña.
-                                </p>
-
-                                <button className="btn-ghost">
-                                Volver al inicio
-                                </button>
-
                             </div>
-
                         </div>
 
                     </div>

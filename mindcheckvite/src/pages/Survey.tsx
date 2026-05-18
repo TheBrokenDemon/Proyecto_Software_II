@@ -4,6 +4,7 @@ import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/s
 import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/css/components.css"
 import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/css/auth.css"
 import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/css/responsive.css"
+import { Link } from "react-router"
 
 export default function Survey(){
     return (
@@ -12,9 +13,9 @@ export default function Survey(){
 
             <section id="screen-survey">
                 <div className="survey-layout">
-                    <button className="back-btn light">
+                    <Link to="/dashboard" className="back-btn light">
                         ← Volver
-                    </button>
+                    </Link>
 
                     <div className="survey-header">
                         <h2>¿Cómo te sientes hoy?</h2>

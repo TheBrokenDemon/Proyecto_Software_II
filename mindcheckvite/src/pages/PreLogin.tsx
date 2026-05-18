@@ -4,7 +4,7 @@ import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/s
 import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/css/components.css"
 import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/css/auth.css"
 import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/css/responsive.css"
-import { Link } from "react-router-dom"
+import { Link, NavLink } from "react-router-dom"
 
 export default function PreLogin(){
     return (
@@ -32,13 +32,13 @@ export default function PreLogin(){
 
                         <div className="landing-actions">
 
-                            <button className="btn-primary">
+                            <NavLink to="/login" className="btn-primary">
                                 Iniciar sesión
-                            </button>
+                            </NavLink>
 
-                            <button className="btn-ghost">
+                            <NavLink to="/register" className="btn-ghost">
                                 Crear cuenta
-                            </button>
+                            </NavLink>
                         </div>
                     </div>
 

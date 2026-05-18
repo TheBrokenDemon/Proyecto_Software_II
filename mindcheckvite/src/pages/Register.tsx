@@ -4,6 +4,7 @@ import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/s
 import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/css/components.css"
 import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/css/auth.css"
 import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/css/responsive.css"
+import { Link } from "react-router"
 
 export default function Register(){
     return (
@@ -15,9 +16,9 @@ export default function Register(){
 
                     <div className="auth-panel">
 
-                        <button className="back-btn">
+                        <Link to="/" className="back-btn">
                             ← Volver
-                        </button>
+                        </Link>
 
                         <div className="auth-header">
                             <div className="logo-mark small">✦</div>

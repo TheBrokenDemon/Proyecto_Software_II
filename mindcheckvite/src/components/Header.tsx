@@ -1,5 +1,6 @@
 import logo from "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/images/MindChecklogo.png"
 import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/css/header.css"
+import { Link } from "react-router"
 
 export default function Header(){
     return (
@@ -10,23 +11,22 @@ export default function Header(){
 
                 <div className="nav-links">
 
-                    <button className="nav-btn active">
+                    <Link to="/dashboard" className="nav-btn active">
                         Inicio
-                    </button>
+                    </Link>
 
-                    <button className="nav-btn">
+                    <Link to="/history" className="nav-btn">
                         Historial
-                    </button>
+                    </Link>
 
-                    <button className="nav-btn">
+                    <Link to="/perfil" className="nav-btn">
                         Perfil
-                    </button>
+                    </Link>
                 </div>
 
-                <button className="nav-logout">
+                <Link to="/" className="nav-logout">
                     Salir
-                </button>
-                
+                </Link>
             </nav>
         </header>
     )

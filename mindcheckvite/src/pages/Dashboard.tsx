@@ -4,9 +4,13 @@ import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/s
 import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/css/components.css"
 import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/css/auth.css"
 import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/css/responsive.css"
+import Header from "../components/Header"
+import { Link } from "react-router"
 
 export default function Dashboard(){
+    <Header/>
     return (
+        
         <nav>
             <title>Dashboard</title>
             
@@ -34,6 +38,13 @@ export default function Dashboard(){
                             </div>
                         </div>
                     </div>
+
+                    <div>
+                        <Link to="/survey" className="surveyLink">
+                            Tomar una encuesta
+                        </Link>
+                    </div>
+
                 </section>
             </div>
         </nav>

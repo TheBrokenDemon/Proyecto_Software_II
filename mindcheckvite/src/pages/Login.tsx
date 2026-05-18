@@ -21,7 +21,7 @@ export default function Login() {
 
                         <button className="back-btn">
                             <li>
-                                <Link to="/PreLogin">← Volver</Link>
+                                <Link to="/">← Volver</Link>
                             </li>
                         </button>
 
@@ -47,9 +47,13 @@ export default function Login() {
                                 placeholder="Tu contraseña"/>
                         </div>
 
-                        <button className="btn-primary full">
+                        <Link to="/recovery">
+                            ¿Ha olvidado su contraseña?
+                        </Link>
+
+                        <Link to="/Dashboard" className="btn-primary full">
                             Entrar
-                        </button>
+                        </Link>
                     </div>
 
                     <div className="auth-deco">

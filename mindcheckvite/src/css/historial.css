@@ -1,0 +1,8 @@
+.userInformation{
+    .userImage{
+        width: 25%;
+        height: 25%;
+        border-color: blue;
+        border-radius: 50%;
+    }
+}
