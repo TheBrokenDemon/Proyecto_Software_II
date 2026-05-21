@@ -1,12 +1,12 @@
-import logo from "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/images/MindChecklogo.png"
-import "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/css/header.css"
+import './cssComponents/header.css'
+import './cssComponents/dashboard.css'
 import { Link } from "react-router"
 
 export default function Header(){
     return (
         <header>
             <nav className="HeaderBackground">
-                <img src={logo} className="MindChecklogo"/>
+                <img src={"./images/MindChecklogo.png"} className="MindChecklogo"/>
                 <h1 className="WrittenHeader1">MindCheck</h1>
 
                 <div className="nav-links">

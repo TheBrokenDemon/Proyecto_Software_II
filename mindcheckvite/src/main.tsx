@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard.tsx'
 import Survey from './pages/Survey.tsx'
 import Recovery from './pages/Recovery.tsx'
 import Historial from './pages/Historial.tsx';
+import Perfil from './pages/Perfil.tsx';
 import { BrowserRouter, Route, Routes } from 'react-router';
 
 createRoot(document.getElementById('root')!).render(
@@ -24,6 +25,8 @@ createRoot(document.getElementById('root')!).render(
       <Route path="/survey" element={<Survey/>}/>
       <Route path="/recovery" element={<Recovery/>}/>
       <Route path="/history" element={<Historial/>}/>
+      <Route path="/perfil" element={<Perfil
+                                      />}/>
     </Routes>
   </BrowserRouter>,
 )

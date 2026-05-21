@@ -1,5 +1,4 @@
 import { useState } from "react";
-import defaultUserImage from "C:/Users/garyg/Desktop/Repositorios/Proyecto_Software_II/mindcheckvite/src/images/userLogo.png"
 
 
 export default function Historial(){
@@ -14,7 +13,7 @@ export default function Historial(){
     return (
         <>
             <div className="userInformation">
-                <img src={newImage ? usuario.imagen : defaultUserImage} className="userImage"/>
+                <img src={newImage ? usuario.imagen : "./images/userLogo.png"} className="userImage"/>
                 <h1>Nombre del usuario</h1>
                 <p>{usuario.nombre}</p>
 
