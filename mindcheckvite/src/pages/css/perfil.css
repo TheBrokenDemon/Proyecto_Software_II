@@ -1,0 +1,47 @@
+.Banner{
+    
+    .bannerImage{
+        border-style: solid;
+        border-radius: 5px;
+
+        display: flex;
+        justify-content: center;
+        margin: auto;
+        width: 1000px;
+        height: 400px;
+    }
+}
+
+.boxImage{
+    display: flex;
+    object-position: center;
+    justify-content: center;
+    
+    .profileImage{
+        width: 25%;
+        height: 25%;
+        object-fit: cover;
+    }
+}
+
+.profileInformation{
+    
+    .username{
+        border-style: solid;
+        border-radius: 25px;
+        margin: auto;
+        width:300px;
+    }
+    .usermail{
+        border-style: solid;
+        border-radius: 25px;
+        margin: auto;
+        width: 300px;
+    }
+    .userage{
+        border-style: solid;
+        border-radius: 25px;
+        margin: auto;
+        width: 300px;
+    }
+}
