@@ -12,6 +12,21 @@
     }
 }
 
+.userState{
+    border-radius: 5px;
+    border-style: solid;
+    justify-content: center;
+    margin: auto;
+    width: 50%;
+    height: 50%;
+    background-color: #f9d3a4;
+    transition: background 1.5s, transform 1s ease-in;
+}
+.userState:hover{
+    background-color:blanchedalmond;
+    transform:rotateY(360deg);
+}
+
 .boxImage{
     display: flex;
     object-position: center;
@@ -25,12 +40,18 @@
 }
 
 .profileInformation{
-    
+    padding: 2%;
     .username{
         border-style: solid;
         border-radius: 25px;
         margin: auto;
         width:300px;
+    }
+    .usergenero{
+        border-style: solid;
+        border-radius: 25px;
+        margin:auto;
+        width: 300px;
     }
     .usermail{
         border-style: solid;
@@ -44,4 +65,17 @@
         margin: auto;
         width: 300px;
     }
+}
+
+.buttonModify{
+    object-position: center;
+    margin: auto;
+    width: 15%;
+    border-style: solid;
+    border-radius: 5px;
+    background-color:rgb(97, 191, 228);
+    transition: 1s;
+}
+.buttonModify:hover{
+    background-color:skyblue
 }

@@ -8,30 +8,36 @@ export default function Perfil(props){
 
     return (
         <>
-            <div className="Banner">
-                <img src="" className="bannerImage"/>
-            </div>
-
-            <div className="boxImage">
-                <img src="./images/userLogo.png" className="profileImage"/>
+            <div className="">
+                <div className="boxImage">
+                    <img src="./images/userLogo.png" className="profileImage"/>
+                </div>
                 
-            </div>
-            
-            <div className="profileInformation">
-                <h1>Informacion del perfil</h1>
-                <p className="username">El nombre del usuario es: </p>
-                <p className="usermail">El correo del usuario es: </p>
-                <p className="userage">La edad del usuario es: </p>
-            </div>
-            
-            <div className="estadoUsuario">
-                <p>El estado del usuario es: </p>
+                <div className="profileInformation">
+                    <h1>Informacion del perfil</h1>
+                    <p>Nombre del usuario</p>
+                    <p className="username">Nombre de usuario</p>
+                    <p>Genero</p>
+                    <p className="usergenero">Genero</p>
+                    <p>Correo del usuario</p>
+                    <p className="usermail">Correo del usuario</p>
+                    <p>Edad del usuario</p>
+                    <p className="userage">Edad del usuario</p>
+                </div>
             </div>
 
-            <div className="Buttons">
-                <Link to="/modificarPerfil" className="modificarButton">
-                    Modificar perfil
-                </Link>    
+            <div className="userState">
+                <div className="estadoUsuario">
+                    <p>El estado del usuario es: </p>
+                </div>
+            </div>
+
+            <div className="buttonModify">
+                <div className="Buttons">
+                    <Link to="/modificarPerfil" className="modificarButton">
+                        Modificar perfil
+                    </Link>    
+                </div>
             </div>
         </>
     )
