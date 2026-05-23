@@ -31,7 +31,9 @@ export default function Historial(){
 
                         </tbody>
                     </table>
+                    <button id="buttonInformation">Mostrar informacion</button>
             </div>
+            <script src="./ts/historialTs.ts"></script>
         </>
     )
 }

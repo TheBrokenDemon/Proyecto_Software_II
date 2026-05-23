@@ -1,3 +1,5 @@
+document.getElementById("tableInformation").addEventListener("submit")
+
 // Se almacenan los estados provenientes de los registros
 let registros = []
 
