@@ -1,5 +1,16 @@
-.userInformation{
-    display: flex;   
+form{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.tableInformation{
+    margin: auto;
+    border-collapse: collapse;
+    tr, th {
+        border: 1px solid;
+        text-align: center;
+    }
 }
 
 .userImage{

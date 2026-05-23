@@ -4,4 +4,20 @@
     margin: auto;
     width: 70%;
     height: 25%;
+    .fieldRequired1{
+        color: red;
+        font-family: Garamond;
+    }
+    .fieldRequired2{
+        color: red;
+        font-family: Garamond;
+    }
+    .fieldRequired3{
+        color: red;
+        font-family: Garamond;
+    }
+    .fieldRequired4{
+        color: red;
+        font-family: Garamond;
+    }
 }

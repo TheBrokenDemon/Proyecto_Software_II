@@ -4,6 +4,7 @@ import './css/landing.css'
 import './css/components.css'
 import './css/auth.css'
 import './css/responsive.css'
+import './css/dashboard.css'
 import Header from "../components/Header"
 import { Link } from "react-router"
 
@@ -17,11 +18,11 @@ export default function Dashboard(){
             <div>
                 <section className="dash-tab">
 
-                    <div className="dashboard-hero">
+                    <div className="dashboard-greeting-modify">
                         <div className="hero-greeting">
-                        <span>Buenos días</span>
-                        <h2>Santiago</h2>
-                        <p>¿Cómo te sientes hoy?</p>
+                            <span>Buenos días</span>
+                            <h2>Santiago</h2>
+                            <p>¿Cómo te sientes hoy?</p>
                         </div>
                     </div>
 

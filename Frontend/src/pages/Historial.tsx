@@ -1,3 +1,4 @@
+import './css/historial.css'
 import { useState } from "react";
 
 
@@ -7,29 +8,29 @@ export default function Historial(){
 
     // Si existiese la imagen, setNewImage(true)
     const conditionalSetNewImage = () => {
-        
+        setNewImage(true);
     }
 
     return (
         <>
             <div className="userInformation">
                 <img src={newImage ? usuario.imagen : "./images/userLogo.png"} className="userImage"/>
-                <h1>Nombre del usuario</h1>
-                <p>{usuario.nombre}</p>
+                <h1>Historial de usuario</h1>
+                <p>La informacion almacenada es un historial de los estados del usuario</p>
 
                 <h2>Informacion del usuario</h2>
-                <p>{usuario.correo}</p>
-                <p>{usuario.edad}</p>
-                <p>{usuario.direccion}</p>
-            </div>
+                    <table className="tableInformation">
+                        <thead>
+                            <tr>
+                                <th>Estado</th>
+                                <th>Descripcion</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaID">
 
-            <div className="userHistory">
-                <h1>Estados del usuario</h1>
-                <ul>
-                    {usuario.map(user => (
-                        <li key={user.id}>{user.estado}</li>
-                    ))}
-                </ul>
+                        </tbody>
+                    </table>
             </div>
         </>
     )
