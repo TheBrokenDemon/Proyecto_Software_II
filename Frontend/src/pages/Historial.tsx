@@ -24,15 +24,8 @@ export default function Historial(){
     // let psicologoID, psicologoName, title, comment
     // comentario={[{psicologoID:"ID", psicologoName:"Name1", comment:"Es bueno sentirse feliz, continue de esa manera"}]}
 
-    return (
-        <>
-            <div className="userInformation">
-                <img src={newImage ? usuario.imagen : "./images/userLogo.png"} className="userImage"/>
-                <h1>Historial de usuario</h1>
-                <p>La informacion almacenada es un historial de los estados del usuario</p>
-
-                <h2>Informacion del usuario</h2>
-                <table className="tableInformation">
+    /*
+    <table className="tableInformation">
                     <thead>
                         <tr>
                             <th>Estado</th>
@@ -50,7 +43,21 @@ export default function Historial(){
                         ))}
                     </tbody>
                 </table>
-                // Los props se conectaran con la base de datos
+    */
+
+
+    /*
+    Comentarios:
+    // Los props se conectaran con la base de datos
+    */
+    return (
+        <>
+            <div className="userInformation">
+                <img src={newImage ? usuario.imagen : "./images/userLogo.png"} className="userImage"/>
+                <h1>Historial de usuario</h1>
+                <p>La informacion almacenada es un historial de los estados del usuario</p>
+
+                <h2>Informacion del usuario</h2>
                 <CardHistorial
                     img={dreamySunrise}
                     estado="Feliz"

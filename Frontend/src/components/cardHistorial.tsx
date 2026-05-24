@@ -7,6 +7,7 @@ import "./cssComponents/estadoCard.css"
                     <p>Comentario: {props.comentario.comment}</p>
                     <button onClick={displayComment}>Volver</button>
             </div>}
+<button onClick={displayComment}>Mostrar comentario</button>
 */
 
 export default function CardHistorial(props) {
@@ -29,7 +30,7 @@ export default function CardHistorial(props) {
                 <h3 className="propEstado">{props.estado}</h3>
                 <p className="propDescription">{props.description}</p>
                 {!props.description && <p className="propDescriptionConditional">No se ha agregado una descripcion</p>}
-                <button onClick={displayComment}>Mostrar comentario</button>
+                
 
                 
             </article>
