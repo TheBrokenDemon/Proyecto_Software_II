@@ -1,6 +1,14 @@
 import { useState } from "react";
 import "./cssComponents/estadoCard.css"
 
+/*
+{setComment &&
+            <div className="newBox">
+                    <p>Comentario: {props.comentario.comment}</p>
+                    <button onClick={displayComment}>Volver</button>
+            </div>}
+*/
+
 export default function CardHistorial(props) {
     const [comment, setComment] = useState(false);
     console.log();
@@ -26,10 +34,6 @@ export default function CardHistorial(props) {
                 
             </article>
             
-            {setComment && <div className="newBox">
-                    <p>Comentario: {props.comentario}</p>
-                    <button onClick={displayComment}>Volver</button>
-            </div>}
         </div>
     )
 }

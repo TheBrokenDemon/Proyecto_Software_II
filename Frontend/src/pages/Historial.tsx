@@ -21,7 +21,8 @@ export default function Historial(){
     }
 
     // const comentario = {psicologoID:"ID", psicologoName: "Nombre Apellido", title: "La importancia de ser feliz", comment: "Es bueno sentirse feliz, continue de esa manera"}
-    
+    // let psicologoID, psicologoName, title, comment
+    // comentario={[{psicologoID:"ID", psicologoName:"Name1", comment:"Es bueno sentirse feliz, continue de esa manera"}]}
 
     return (
         <>
@@ -55,7 +56,6 @@ export default function Historial(){
                     estado="Feliz"
                     description="Me he sentido feliz debido a que he mejorado la nota"
                     fecha="26/05/2026"
-                    comentario={{psicologoID: "ID"}}
                 />
                 <CardHistorial
                     img="./images/dusk-calms.jpg"
