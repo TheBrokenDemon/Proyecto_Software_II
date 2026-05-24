@@ -10,6 +10,7 @@
     width: 5%;
     height: 5%;
     object-fit: cover;
+    object-position: left;
 }
 
 .WrittenHeader1{

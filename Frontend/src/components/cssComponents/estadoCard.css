@@ -1,0 +1,27 @@
+.estadoCard{
+    border-radius: 25px;
+    border-style: solid;
+    width: 500px;
+    height: 125px;
+
+    margin: auto;
+    margin-bottom: 1%;
+
+    background-image:
+        url('./images/dusk-calms.jpg');
+        opacity: 0.9;
+        background-repeat: no-repeat;
+    
+    .propFecha{
+        color:antiquewhite;
+    }
+    .propEstado{
+        color:darkkhaki;
+    }
+    .propDescription{
+        color:darkgoldenrod;
+    }
+    .propDescriptionConditional{
+        color:darkgoldenrod;
+    }
+}

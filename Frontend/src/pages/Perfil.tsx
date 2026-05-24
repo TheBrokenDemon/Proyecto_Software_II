@@ -2,7 +2,7 @@ import { Link } from "react-router"
 import { useState } from "react";
 import './css/perfil.css'
 
-export default function Perfil(props){
+export default function Perfil(){
     const [usuario, setUsuario] = useState("");
 
 
