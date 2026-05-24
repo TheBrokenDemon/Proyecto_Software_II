@@ -1,8 +1,15 @@
+.Card{
+}
+
 .estadoCard{
     border-radius: 25px;
     border-style: solid;
     width: 500px;
     height: 125px;
+    
+    display:flex;
+    flex-direction: column;
+    align-items: center;
 
     margin: auto;
     margin-bottom: 1%;
@@ -24,4 +31,20 @@
     .propDescriptionConditional{
         color:darkgoldenrod;
     }
+}
+
+.newBox{
+    border-radius:25px;
+    border-style: solid;
+    width: 200px;
+    height: 100px;
+
+    justify-content: center;
+    align-items: center;
+    padding-top: 25px;
+    position: fixed;
+
+    margin: auto;
+    background-color:blanchedalmond;
+    z-index: 2;
 }

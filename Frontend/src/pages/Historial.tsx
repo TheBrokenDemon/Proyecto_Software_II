@@ -10,7 +10,6 @@ import { useState } from "react";
 
 
 export default function Historial(){
-    const [usuario, setUsuario] = useState([]);
     const [newImage, setNewImage] = useState(false);
 
     
@@ -20,9 +19,11 @@ export default function Historial(){
         setNewImage(true);
     }
 
-    // const comentario = {psicologoID:"ID", psicologoName: "Nombre Apellido", title: "La importancia de ser feliz", comment: "Es bueno sentirse feliz, continue de esa manera"}
+    let usuario = [{}]
+
+    const comentario = {psicologoID:"ID", psicologoName: "Nombre Apellido", title: "La importancia de ser feliz", comment: "Es bueno sentirse feliz, continue de esa manera"}
     // let psicologoID, psicologoName, title, comment
-    // comentario={[{psicologoID:"ID", psicologoName:"Name1", comment:"Es bueno sentirse feliz, continue de esa manera"}]}
+
 
     /*
     <table className="tableInformation">
@@ -52,7 +53,7 @@ export default function Historial(){
     */
     return (
         <>
-            <div className="userInformation">
+            <main className="userInformation">
                 <img src={newImage ? usuario.imagen : "./images/userLogo.png"} className="userImage"/>
                 <h1>Historial de usuario</h1>
                 <p>La informacion almacenada es un historial de los estados del usuario</p>
@@ -63,6 +64,7 @@ export default function Historial(){
                     estado="Feliz"
                     description="Me he sentido feliz debido a que he mejorado la nota"
                     fecha="26/05/2026"
+                    comentario={JSON.stringify(comentario.comment)}
                 />
                 <CardHistorial
                     img="./images/dusk-calms.jpg"
@@ -82,7 +84,7 @@ export default function Historial(){
                     description="Me he sentido feliz debido a que estan yendo bien las cosas"
                     fecha="20/05/2026"
                 />
-            </div>
+            </main>
         </>
     )
 }
