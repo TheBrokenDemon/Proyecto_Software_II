@@ -1,14 +1,13 @@
 require('dotenv').config();
 const express = require('express');
-const helmet = require('helmet');
-const cors = require('cors');
+const helmet  = require('helmet');
+const cors    = require('cors');
 const { connectDB } = require('./config/db');
 
-// Rutas
-const authRoutes       = require('./routes/auth.routes');
-const userRoutes       = require('./routes/user.routes');
-const emotionalRoutes  = require('./routes/emotional.routes');
-const evaluationRoutes = require('./routes/evaluation.routes');
+const authRoutes         = require('./routes/auth.routes');
+const userRoutes         = require('./routes/user.routes');
+const evaluationRoutes   = require('./routes/evaluation.routes');
+const psychologistRoutes = require('./routes/psychologist.routes');
 
 const app = express();
 
@@ -23,16 +22,16 @@ app.use(express.urlencoded({ extended: true }));
 
 // ─── Health check ────────────────────────────────────────────
 app.get('/health', (_req, res) => {
-  res.status(200).json({ status: 'ok', service: 'MindCheck ULima API' });
+  res.status(200).json({ status: 'ok', service: 'MindCheck ULima API v2' });
 });
 
-// ─── Rutas de la API ─────────────────────────────────────────
-app.use('/api/auth',        authRoutes);
-app.use('/api/users',       userRoutes);
-app.use('/api/emotional',   emotionalRoutes);
-app.use('/api/evaluations', evaluationRoutes);
+// ─── Rutas ───────────────────────────────────────────────────
+app.use('/api/auth',         authRoutes);
+app.use('/api/users',        userRoutes);
+app.use('/api/evaluations',  evaluationRoutes);
+app.use('/api/psychologist', psychologistRoutes);
 
-// ─── Ruta no encontrada ──────────────────────────────────────
+// ─── 404 ─────────────────────────────────────────────────────
 app.use((_req, res) => {
   res.status(404).json({ message: 'Ruta no encontrada.' });
 });

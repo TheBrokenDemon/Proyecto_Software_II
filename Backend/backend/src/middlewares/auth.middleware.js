@@ -1,10 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { pool } = require('../config/db');
 
-/**
- * Middleware de autenticación.
- * Verifica el JWT del header Authorization y adjunta req.user con los datos del usuario.
- */
 const authenticate = async (req, res, next) => {
   try {
     const authHeader = req.headers['authorization'];
@@ -14,29 +10,36 @@ const authenticate = async (req, res, next) => {
 
     const token = authHeader.split(' ')[1];
 
-    // Verificar firma y expiración del JWT
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch {
-      return res.status(401).json({ message: 'Token inválido o expirado.' });
+      return res.status(401).json({ message: 'Token invalido o expirado.' });
     }
 
-    // Verificar que el token esté registrado en la tabla sessions (no fue revocado)
     const { rows } = await pool.query(
       'SELECT id FROM sessions WHERE token = $1 AND expires_at > NOW()',
       [token]
     );
     if (rows.length === 0) {
-      return res.status(401).json({ message: 'Sesión no válida. Inicia sesión nuevamente.' });
+      return res.status(401).json({ message: 'Sesion no valida. Inicia sesion nuevamente.' });
     }
 
-    req.user = { id: decoded.sub, email: decoded.email };
+    req.user = { id: decoded.sub, email: decoded.email, role: decoded.role };
     next();
   } catch (err) {
-    console.error('Error en middleware authenticate:', err.message);
+    console.error('Error en authenticate:', err.message);
     res.status(500).json({ message: 'Error interno del servidor.' });
   }
 };
 
-module.exports = { authenticate };
+const authorize = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ message: 'No tienes permiso para acceder a este recurso.' });
+    }
+    next();
+  };
+};
+
+module.exports = { authenticate, authorize };

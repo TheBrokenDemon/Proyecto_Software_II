@@ -1,11 +1,8 @@
 const { pool } = require('../config/db');
 
-/**
- * Retorna el perfil del usuario autenticado (sin password_hash).
- */
 const getUserProfile = async (userId) => {
   const { rows } = await pool.query(
-    'SELECT id, full_name, email, age, gender, created_at FROM users WHERE id = $1',
+    'SELECT id, full_name, email, age, gender, role, created_at FROM users WHERE id = $1',
     [userId]
   );
   if (rows.length === 0) {
@@ -16,27 +13,14 @@ const getUserProfile = async (userId) => {
   return rows[0];
 };
 
-/**
- * Actualiza los campos permitidos del perfil.
- * Solo actualiza los campos que vienen en el body.
- */
 const updateUserProfile = async (userId, { full_name, age, gender }) => {
   const fields = [];
   const values = [];
   let idx = 1;
 
-  if (full_name !== undefined) {
-    fields.push(`full_name = $${idx++}`);
-    values.push(full_name.trim());
-  }
-  if (age !== undefined) {
-    fields.push(`age = $${idx++}`);
-    values.push(age);
-  }
-  if (gender !== undefined) {
-    fields.push(`gender = $${idx++}`);
-    values.push(gender);
-  }
+  if (full_name !== undefined) { fields.push(`full_name = $${idx++}`); values.push(full_name.trim()); }
+  if (age !== undefined)       { fields.push(`age = $${idx++}`);       values.push(age); }
+  if (gender !== undefined)    { fields.push(`gender = $${idx++}`);    values.push(gender); }
 
   if (fields.length === 0) {
     const err = new Error('No se enviaron campos para actualizar.');
@@ -47,7 +31,7 @@ const updateUserProfile = async (userId, { full_name, age, gender }) => {
   values.push(userId);
   const { rows } = await pool.query(
     `UPDATE users SET ${fields.join(', ')} WHERE id = $${idx}
-     RETURNING id, full_name, email, age, gender, updated_at`,
+     RETURNING id, full_name, email, age, gender, role, updated_at`,
     values
   );
 
