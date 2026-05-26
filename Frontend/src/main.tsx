@@ -13,6 +13,7 @@ import Recovery from './pages/Recovery.tsx'
 import Historial from './pages/Historial.tsx';
 import Perfil from './pages/Perfil.tsx';
 import ModificarPerfil from './pages/modificarPerfil.tsx';
+import ProfesionalAcces from './pages/ProfessionalAccess.tsx';
 import { BrowserRouter, Route, Routes } from 'react-router';
 
 createRoot(document.getElementById('root')!).render(
@@ -22,6 +23,7 @@ createRoot(document.getElementById('root')!).render(
       <Route path="/" element={<PreLogin/>}/>
       <Route path="/register" element={<Register/>}/>
       <Route path="/login" element={<Login/>}/>
+      <Route path="/professional-access" element={<ProfesionalAcces />} />
       <Route path="/dashboard" element={<Dashboard/>}/>
       <Route path="/survey" element={<Survey/>}/>
       <Route path="/recovery" element={<Recovery/>}/>

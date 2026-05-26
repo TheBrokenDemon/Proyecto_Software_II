@@ -51,6 +51,10 @@ export default function Login() {
                             ¿Ha olvidado su contraseña?
                         </Link>
 
+                        <Link to="/professional-access" className="professional-login-link">
+                            Acceso para profesionales de psicología
+                        </Link>
+
                         <Link to="/Dashboard" className="btn-primary full">
                             Entrar
                         </Link>

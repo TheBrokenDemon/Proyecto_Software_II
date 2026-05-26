@@ -60,3 +60,14 @@
   background: var(--sage-light);
   border-radius: var(--radius-md);
 }
+
+.professional-login-link {
+  text-align: center;
+  color: #4f46e5;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.professional-login-link:hover {
+  text-decoration: underline;
+}
