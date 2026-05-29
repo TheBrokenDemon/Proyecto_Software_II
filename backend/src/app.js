@@ -1,0 +1,57 @@
+require('dotenv').config();
+const express = require('express');
+const helmet  = require('helmet');
+const cors    = require('cors');
+const { connectDB } = require('./config/db');
+
+const authRoutes         = require('./routes/auth.routes');
+const userRoutes         = require('./routes/user.routes');
+const evaluationRoutes   = require('./routes/evaluation.routes');
+const psychologistRoutes = require('./routes/psychologist.routes');
+
+const app = express();
+
+// ─── Seguridad y parseo ──────────────────────────────────────
+app.use(helmet());
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:3000', process.env.FRONTEND_URL || 'http://localhost:5173'],
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  credentials: true,
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// ─── Health check ────────────────────────────────────────────
+app.get('/health', (_req, res) => {
+  res.status(200).json({ status: 'ok', service: 'MindCheck ULima API v2' });
+});
+
+// ─── Rutas ───────────────────────────────────────────────────
+app.use('/api/auth',         authRoutes);
+app.use('/api/users',        userRoutes);
+app.use('/api/evaluations',  evaluationRoutes);
+app.use('/api/psychologist', psychologistRoutes);
+
+// ─── 404 ─────────────────────────────────────────────────────
+app.use((_req, res) => {
+  res.status(404).json({ message: 'Ruta no encontrada.' });
+});
+
+// ─── Error handler global ────────────────────────────────────
+app.use((err, _req, res, _next) => {
+  console.error('Error no controlado:', err.message);
+  res.status(500).json({ message: 'Error interno del servidor.' });
+});
+
+// ─── Arranque ────────────────────────────────────────────────
+const PORT = process.env.PORT || 4000;
+
+const start = async () => {
+  await connectDB();
+  app.listen(PORT, () => {
+    console.log(`✓ Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`  Entorno: ${process.env.NODE_ENV || 'development'}`);
+  });
+};
+
+start();

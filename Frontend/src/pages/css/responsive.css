@@ -1,0 +1,18 @@
+@media (max-width: 768px) {
+
+  .auth-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-deco {
+    display: none;
+  }
+
+  .emotion-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .profile-layout {
+    grid-template-columns: 1fr;
+  }
+}
