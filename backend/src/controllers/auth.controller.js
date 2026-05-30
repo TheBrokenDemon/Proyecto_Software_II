@@ -54,14 +54,15 @@ exports.register = async (req, res, next) => {
       expiresIn: process.env.JWT_EXPIRES_IN || '1d',
     });
 
-    // 4.1. Guardar la sesión en la base de datos
-    // Calculamos la fecha de expiración para 1 día en el futuro sin dependencias externas.
+    // 4.1. Guardar la sesión en la base de datos (opcional pero recomendado)
+    // Esto permite invalidar sesiones desde el backend si es necesario.
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 1);
     await pool.query(
       'INSERT INTO sessions (user_id, token, expires_at) VALUES ($1, $2, $3)',
       [savedUser.id, token, expiresAt]
     );
+
     // 5. Usar la Factory para crear una respuesta segura (sin la contraseña)
     const userResponse = UserFactory.createUserResponse(savedUser, token);
 
@@ -94,23 +95,48 @@ exports.login = async (req, res, next) => {
     const result = await pool.query('SELECT * FROM users WHERE email = $1', [email.toLowerCase().trim()]);
     const user = result.rows[0];
 
-    // Se compara la contraseña enviada con el hash almacenado en 'password_hash'.
-    if (!user || !(await bcrypt.compare(password, user.password_hash))) {
+    // --- INICIO DE DIAGNÓSTICO ---
+    if (!user) {
+      console.error('[Auth] Diagnóstico: Usuario no encontrado en la base de datos.');
       return res.status(401).json({ message: 'Credenciales incorrectas.' });
     }
+    
+    console.log('[Auth] Diagnóstico: Usuario encontrado:', { id: user.id, email: user.email, role: user.role });
+
+    if (!user.password_hash) {
+      console.error('[Auth] Diagnóstico: El usuario encontrado no tiene un hash de contraseña.');
+      return res.status(401).json({ message: 'Credenciales incorrectas.' });
+    }
+
+    console.log('[Auth] Diagnóstico: Hash de la BD:', user.password_hash);
+    console.log('[Auth] Diagnóstico: Longitud del Hash:', user.password_hash.length);
+
+    // Se compara la contraseña enviada con el hash almacenado.
+    console.log('[Auth] Diagnóstico: Comparando contraseñas...');
+    const isMatch = await bcrypt.compare(password, user.password_hash);
+    console.log('[Auth] Diagnóstico: ¿Las contraseñas coinciden?:', isMatch);
+
+    if (!isMatch) {
+        console.error('[Auth] Diagnóstico: La comparación de contraseñas falló.');
+        return res.status(401).json({ message: 'Credenciales incorrectas.' });
+    }
+    // --- FIN DE DIAGNÓSTICO ---
+
+    console.log('[Auth] Login exitoso. Generando token...');
 
     const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN || '1d',
     });
 
-    // Guardar la nueva sesión en la base de datos
+    // Guardar la nueva sesión en la base de datos (opcional pero recomendado)
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 1);
     await pool.query(
       'INSERT INTO sessions (user_id, token, expires_at) VALUES ($1, $2, $3)',
       [user.id, token, expiresAt]
     );
-
+    
+    // Se crea una respuesta segura que no expone el hash de la contraseña.
     const userResponse = UserFactory.createUserResponse(user, token);
     res.status(200).json(userResponse);
   } catch (error) {

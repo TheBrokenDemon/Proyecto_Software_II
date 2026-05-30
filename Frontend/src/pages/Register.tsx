@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { registerUser } from '../services/usuarioServices'
-import './css/variables.css'
-import './css/base.css'
-import './css/landing.css'
-import './css/components.css'
-import './css/auth.css'
-import './css/responsive.css'
+import '../estilos/variables.css'
+import '../estilos/base.css'
+import '../estilos/landing.css'
+import '../estilos/components.css'
+import '../estilos/auth.css'
+import '../estilos/responsive.css'
 
 export default function Register() {
   const navigate = useNavigate()

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink } from "react-router-dom"
 import { useAuth } from '../context/AuthContext';
-import './Header.css'; // Archivo de estilos mejorado
+import '../estilos/Header.css'; // Archivo de estilos mejorado
 
 // --- Iconos para el menú desplegable ---
 const UserIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
@@ -30,22 +30,30 @@ export default function Header(){
     return (
         <header className="main-header">
             <div className="header-content">
-                <Link to="/dashboard" className="logo">
+                <Link to={user.role === 'psicologo' ? '/psychologist-panel' : '/dashboard'} className="logo-link">
                     <img src={"/images/MindChecklogo.png"} alt="MindCheck Logo" className="logo-img"/>
                     <span>MindCheck</span>
                 </Link>
                 
-                <nav className="main-nav">
-                    <NavLink to="/dashboard" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+              <nav className="main-nav">
+                    <NavLink 
+                        to={user.role === 'psicologo' ? '/psychologist-panel' : '/dashboard'} 
+                        className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+                        end // 'end' asegura que solo esté activo en la ruta exacta
+                    >
                         Inicio
                     </NavLink>
-                    <NavLink to="/survey" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
-                        Encuestas
-                    </NavLink>
-                    <NavLink to="/history" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
-                        Historial
-                    </NavLink>
-                </nav>
+                    {user.role !== 'psicologo' && (
+                                                     <>
+                                                <NavLink to="/encuestas" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+                                                     Encuestas
+                                            </NavLink>
+                                <NavLink to="/history" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+                                    Historial
+                                </NavLink>
+                            </>
+                        )}
+</nav>
 
                 <div className="user-menu" ref={dropdownRef}>
                     <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="user-menu-button">

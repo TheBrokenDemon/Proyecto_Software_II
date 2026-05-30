@@ -15,7 +15,7 @@ export interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (credentials: any) => Promise<any>;
+  login: (credentials: any) => Promise<{ role: string }>; // Devolvemos el rol para la redirección
   register: (userData: any) => Promise<any>;
   logout: () => void;
   reloadUser: () => Promise<void>;
@@ -60,17 +60,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [loadUserProfile]);
 
   // Función de Login
-  const handleLogin = async (credentials: any) => {
-    try {
-      const data = await loginUser(credentials);
-      setSession(data);
-      return data;
-    } catch (error) {
-      setSession(null);
-      throw error;
-    }
-  };
-
+const handleLogin = async (credentials: any) => {
+  try {
+    const data = await loginUser(credentials);
+    setSession(data);
+    // Guardamos datos que podrían ser útiles en otras partes de la app
+    localStorage.setItem('userRole', data.user.role);
+    localStorage.setItem('userName', data.user.full_name);
+    return { role: data.user.role }; // Devolvemos solo el rol
+  } catch (error) {
+    setSession(null);
+    throw error;
+  }
+};
   // Función de Registro
   const handleRegister = async (userData: any) => {
     try {
@@ -86,6 +88,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Función de Logout
   const handleLogout = () => {
     setSession(null);
+    // Limpiamos cualquier otro dato de sesión que hayamos guardado
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userName');
     // Redirige para una mejor UX, asegurando que el estado de la app se reinicie
     window.location.href = '/login';
   };
@@ -99,7 +104,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     register: handleRegister,
     logout: handleLogout,
     reloadUser: loadUserProfile,
-  }), [user, isLoading, setSession]);
+  }), [user, isLoading, loadUserProfile]);
 
   return (
     <AuthContext.Provider value={authContextValue}>

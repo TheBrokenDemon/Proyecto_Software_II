@@ -1,90 +1,87 @@
-import './css/historial.css'
-
+import { useState, useEffect } from "react";
 import CardHistorial from '../components/cardHistorial';
+import '../estilos/historial.css';
 
+const API_URL = "http://localhost:3000/api";
+const getToken = () => localStorage.getItem('authToken');
 
-import dreamySunrise from './images/dreamy-sunrise.jpg'
+// --- Tipos para los datos del historial ---
+interface HistoryItem {
+  id: string;
+  title: string;
+  completed_at: string;
+}
 
-import { useState } from "react";
+export default function Historial() {
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const res = await fetch(`${API_URL}/evaluations/history`, {
+          headers: { 'Authorization': `Bearer ${getToken()}` }
+        });
 
+        if (!res.ok) {
+          throw new Error('No se pudo obtener el historial. Inténtalo de nuevo.');
+        }
 
-export default function Historial(){
-    const [newImage, setNewImage] = useState(false);
+        const data = await res.json();
+        setHistory(data.history || []);
+      } catch (err: any) {
+        setError(err.message || 'Ocurrió un error inesperado.');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    
+    fetchHistory();
+  }, []);
 
-    // Si existiese la imagen, setNewImage(true)
-    const conditionalSetNewImage = () => {
-        setNewImage(true);
-    }
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString('es-PE', {
+      day: '2-digit', month: '2-digit', year: 'numeric'
+    });
+  };
 
-    let usuario = [{}]
+  return (
+    <div className="history-container">
+      <header className="history-header">
+        <h1>Mi Historial de Evaluaciones</h1>
+        <p>Aquí puedes ver un registro de todas las encuestas que has completado.</p>
+      </header>
 
-    const comentario = {psicologoID:"ID", psicologoName: "Nombre Apellido", title: "La importancia de ser feliz", comment: "Es bueno sentirse feliz, continue de esa manera"}
-    // let psicologoID, psicologoName, title, comment
+      <main>
+        {loading && (
+          <div className="history-message-container">Cargando historial...</div>
+        )}
 
+        {error && (
+          <div className="history-message-container error">{error}</div>
+        )}
 
-    /*
-    <table className="tableInformation">
-                    <thead>
-                        <tr>
-                            <th>Estado</th>
-                            <th>Descripcion</th>
-                            <th>Fecha</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaID">
-                        {usuario.map((user) => (
-                            <tr>
-                                <td key={user.id}>{user.estado}</td>
-                                <td key={user.id}>{user.description}</td>
-                                <td key={user.id}>{user.fecha}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-    */
-
-
-    /*
-    Comentarios:
-    // Los props se conectaran con la base de datos
-    */
-    return (
-        <>
-            <main className="userInformation">
-                <img src={newImage ? usuario.imagen : "./images/userLogo.png"} className="userImage"/>
-                <h1>Historial de usuario</h1>
-                <p>La informacion almacenada es un historial de los estados del usuario</p>
-
-                <h2>Informacion del usuario</h2>
+        {!loading && !error && (
+          history.length > 0 ? (
+            <div className="history-grid">
+              {history.map((item) => (
                 <CardHistorial
-                    img={dreamySunrise}
-                    estado="Feliz"
-                    description="Me he sentido feliz debido a que he mejorado la nota"
-                    fecha="26/05/2026"
-                    comentario={JSON.stringify(comentario.comment)}
+                  key={item.id}
+                  img="/images/dreamy-sunrise.jpg" // Usamos la ruta absoluta desde la carpeta 'public'
+                  estado={item.title}
+                  description="Evaluación completada exitosamente."
+                  fecha={formatDate(item.completed_at)}
                 />
-                <CardHistorial
-                    img="./images/dusk-calms.jpg"
-                    estado="Triste"
-                    description="Me he sentido triste debido a una nota de la universidad"
-                    fecha="24/05/2026"
-                />
-                <CardHistorial
-                    img="./images/midnight-moon.jpg"
-                    estado="Ansioso"
-                    description="Me he sentido ansioso debido a un proximo examen"
-                    fecha="21/05/2026"
-                />
-                <CardHistorial
-                    img="./images/dreamy-sunrise.jpg"
-                    estado="Feliz"
-                    description="Me he sentido feliz debido a que estan yendo bien las cosas"
-                    fecha="20/05/2026"
-                />
-            </main>
-        </>
-    )
+              ))}
+            </div>
+          ) : (
+            <div className="history-message-container">
+              Aún no has completado ninguna evaluación.
+            </div>
+          )
+        )}
+      </main>
+    </div>
+  );
 }

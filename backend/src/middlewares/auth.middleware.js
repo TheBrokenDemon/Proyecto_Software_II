@@ -13,6 +13,7 @@ const authenticate = async (req, res, next) => {
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log('TOKEN DECODED:', decoded);
     } catch {
       return res.status(401).json({ message: 'Token invalido o expirado.' });
     }
@@ -25,7 +26,7 @@ const authenticate = async (req, res, next) => {
       return res.status(401).json({ message: 'Sesion no valida. Inicia sesion nuevamente.' });
     }
 
-    req.user = { id: decoded.sub, email: decoded.email, role: decoded.role };
+    req.user = { id: decoded.id || decoded.sub, email: decoded.email, role: decoded.role };
     next();
   } catch (err) {
     console.error('Error en authenticate:', err.message);

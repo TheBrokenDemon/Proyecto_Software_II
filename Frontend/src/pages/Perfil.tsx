@@ -1,44 +1,44 @@
-import { Link } from "react-router"
-import { useState } from "react";
-import './css/perfil.css'
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import "../estilos/perfil.css";
 
-export default function Perfil(){
-    const [usuario, setUsuario] = useState("");
+export default function Perfil() {
+    // Usamos el hook useAuth para obtener la información del usuario actual
+    const { user, isLoading } = useAuth();
 
+    // Si está cargando, mostramos un mensaje
+    if (isLoading) {
+        return <div className="profile-container">Cargando perfil...</div>;
+    }
+
+    // Si no hay usuario (por algún error), mostramos un mensaje
+    if (!user) {
+        return <div className="profile-container">No se pudo cargar la información del perfil.</div>;
+    }
 
     return (
-        <>
-            <div className="">
-                <div className="boxImage">
-                    <img src="./images/userLogo.png" className="profileImage"/>
-                </div>
-                
-                <div className="profileInformation">
-                    <h1>Informacion del perfil</h1>
-                    <p>Nombre del usuario</p>
-                    <p className="username">Nombre de usuario</p>
-                    <p>Genero</p>
-                    <p className="usergenero">Genero</p>
-                    <p>Correo del usuario</p>
-                    <p className="usermail">Correo del usuario</p>
-                    <p>Edad del usuario</p>
-                    <p className="userage">Edad del usuario</p>
-                </div>
+        <div className="profile-container">
+            <div className="boxImage">
+                <img src="/images/userLogo.png" className="profileImage" alt="Avatar de usuario"/>
             </div>
-
-            <div className="userState">
-                <div className="estadoUsuario">
-                    <p>El estado del usuario es: </p>
-                </div>
+            
+            <div className="profileInformation">
+                <h1>Información del Perfil</h1>
+                <p>Nombre del usuario</p>
+                <p className="username">{user.full_name}</p>
+                <p>Género</p>
+                <p className="usergenero">{user.gender || 'No especificado'}</p>
+                <p>Correo del usuario</p>
+                <p className="usermail">{user.email}</p>
+                <p>Edad del usuario</p>
+                <p className="userage">{user.age || 'No especificada'}</p>
             </div>
 
             <div className="buttonModify">
-                <div className="Buttons">
-                    <Link to="/modificarPerfil" className="modificarButton">
-                        Modificar perfil
-                    </Link>    
-                </div>
+                <Link to="/modificarPerfil" className="modificarButton">
+                    Modificar Perfil
+                </Link>    
             </div>
-        </>
+        </div>
     )
 }

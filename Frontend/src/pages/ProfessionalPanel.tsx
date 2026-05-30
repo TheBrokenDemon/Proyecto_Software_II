@@ -1,5 +1,5 @@
 import { Link, Navigate } from "react-router";
-import "./css/professionalAccess.css";
+import "../estilos/professionalAccess.css";
 
 export default function ProfessionalPanel() {
   const hasAccess = localStorage.getItem("professionalAccess") === "true";

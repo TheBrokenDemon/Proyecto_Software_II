@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
-import "./css/variables.css";
-import "./css/base.css";
-import "./css/components.css";
-import "./css/auth.css";
-import "./css/responsive.css";
-import "./css/ProfessionalAcces.css";
+import { Link, useNavigate } from "react-router-dom";
+import "../estilos/variables.css";
+import "../estilos/base.css";
+import "../estilos/components.css";
+import "../estilos/auth.css";
+import "../estilos/responsive.css";
+import "../estilos/professionalAccess.css";
 
 type FormData = {
   nombres: string;

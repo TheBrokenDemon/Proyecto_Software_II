@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import './css/Login.css'; // Asegúrate de tener estilos para esta página
+import '../estilos/Login.css'; // Asegúrate de tener estilos para esta página
 
 type FormValues = {
   email: string;
@@ -18,12 +18,12 @@ export default function Login() {
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
       setServerError(''); // Limpia errores previos
-      await login(data);
+      const { role } = await login(data);
       
-      // --- ¡ESTA ES LA SOLUCIÓN! ---
-      // Después de un login exitoso, redirigimos al dashboard.
-      navigate('/dashboard');
-
+      // Redirige al panel correspondiente según el rol del usuario
+      const targetPath = role === 'psicologo' ? '/psychologist-panel' : '/dashboard';
+      // `replace: true` evita que el usuario pueda volver a la página de login con el botón "atrás"
+      navigate(targetPath, { replace: true });
     } catch (error: any) {
       console.error("Error en el inicio de sesión:", error);
       setServerError(error.message || 'Error al iniciar sesión. Por favor, verifica tus credenciales.');

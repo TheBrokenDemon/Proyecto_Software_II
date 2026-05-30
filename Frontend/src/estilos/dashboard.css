@@ -1,0 +1,104 @@
+/* Estilos para el Dashboard */
+.dashboard-container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.dashboard-greeting {
+  margin-bottom: 0;
+}
+
+.dashboard-greeting span {
+  font-size: 1rem;
+  color: var(--muted, #6b7280);
+}
+
+.dashboard-greeting h2 {
+  font-family: var(--font-display, serif);
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--charcoal, #111827);
+  line-height: 1.2;
+  margin: 0.25rem 0 0.5rem;
+}
+
+.dashboard-greeting p {
+  font-size: 1.1rem;
+  color: var(--charcoal-soft, #4b5563);
+}
+
+/* --- Quick Stats --- */
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-card {
+  background-color: var(--warm-white, #fff);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: var(--radius-md, 16px);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--charcoal-soft, #4b5563);
+}
+
+.stat-card-icon {
+  color: var(--sage, #8aab9a);
+}
+
+.stat-card-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--charcoal, #111827);
+  line-height: 1;
+}
+
+.stat-card-label {
+  font-size: 0.85rem;
+  color: var(--muted, #6b7280);
+}
+
+/* --- Main Action Card --- */
+.dashboard-main-action {
+  background: var(--charcoal, #2c2828);
+  color: var(--cream, #faf6f1);
+  padding: 2.5rem;
+  border-radius: var(--radius-lg, 24px);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--shadow-deep);
+}
+
+.dashboard-main-action h3 {
+  font-family: var(--font-display, serif);
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.dashboard-main-action p {
+  max-width: 450px;
+  color: rgba(250, 246, 241, 0.8);
+  line-height: 1.6;
+}
+
+.dashboard-main-action .btn-primary {
+  margin-top: 0.5rem;
+}

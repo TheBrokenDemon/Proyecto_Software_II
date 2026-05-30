@@ -30,6 +30,29 @@ const sendPasswordResetEmail = async (toEmail, resetToken) => {
       </div>
     `,
   });
+
+  const sendCitationEmailToStudent = async (student, psychologistName) => {
+  await transporter.sendMail({
+    from: process.env.MAIL_FROM,
+    to: student.email,
+    subject: 'MindCheck ULima - Citación con psicólogo',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto;">
+        <h2 style="color: #4f46e5;">MindCheck ULima</h2>
+        <p>Hola <strong>${student.full_name}</strong>,</p>
+        <p>El área de psicología de la Universidad de Lima te ha enviado una citación.</p>
+        <p>El psicólogo <strong>${psychologistName}</strong> ha revisado tus evaluaciones emocionales y considera importante tener una conversación contigo.</p>
+        <div style="background:#f3f4f6; padding:16px; border-radius:8px; margin:20px 0;">
+          <p style="margin:0; color:#374151;">Por favor comunícate con el área de Bienestar Universitario para coordinar tu cita.</p>
+        </div>
+        <p style="color:#6b7280; font-size:13px;">Este mensaje fue generado automáticamente por MindCheck ULima.</p>
+      </div>
+    `,
+  });
+
+  
 };
 
-module.exports = { sendPasswordResetEmail };
+};
+
+module.exports = { sendPasswordResetEmail, sendCitationEmailToStudent };

@@ -2,7 +2,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useEffect, useState, useTransition } from 'react';
 import { updateUserProfile } from "../services/usuarioServices";
 import { useAuth } from "../context/AuthContext";
-import "./css/modificarPerfil.css";
+import "../estilos/modificarPerfil.css";
 
 // --- Tipos y Componentes Auxiliares ---
 // Definimos el tipo de datos para el formulario

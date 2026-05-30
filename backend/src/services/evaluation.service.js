@@ -1,77 +1,90 @@
 const { pool } = require('../config/db');
-const { EvaluationFactory } = require('../utils/Factories');
 
-/**
- * Obtiene todas las evaluaciones activas.
- */
 const getActiveEvaluations = async () => {
   const { rows } = await pool.query(
-    'SELECT id, title, slug, description, icon FROM evaluations WHERE is_active = TRUE ORDER BY created_at'
+    'SELECT id, title, slug, description, icon FROM evaluations WHERE is_active = TRUE ORDER BY title ASC'
   );
   return rows;
 };
 
-/**
- * Obtiene una evaluación específica con sus preguntas, usando su slug.
- */
 const getEvaluationWithQuestions = async (slug) => {
-  // Primero, obtenemos la evaluación
-  const evaluationResult = await pool.query('SELECT * FROM evaluations WHERE slug = $1', [slug]);
-  if (evaluationResult.rows.length === 0) {
-    const error = new Error('La evaluación no fue encontrada.');
-    error.status = 404;
-    throw error;
-  }
-  const evaluation = evaluationResult.rows[0];
+  const evalResult = await pool.query(
+    'SELECT id, title, slug, description FROM evaluations WHERE slug = $1 AND is_active = TRUE',
+    [slug]
+  );
 
-  // Luego, obtenemos sus preguntas ordenadas
-  const questionsResult = await pool.query(
-    'SELECT id, content, type, options, required FROM questions WHERE evaluation_id = $1 ORDER BY order_index ASC',
+  if (evalResult.rows.length === 0) {
+    const err = new Error('Evaluacion no encontrada.');
+    err.status = 404;
+    throw err;
+  }
+
+  const evaluation = evalResult.rows[0];
+
+  const { rows: questions } = await pool.query(
+    `SELECT id, content, type, options, order_index, required
+     FROM questions WHERE evaluation_id = $1 ORDER BY order_index ASC`,
     [evaluation.id]
   );
 
-  evaluation.questions = questionsResult.rows;
-  return evaluation;
+  return { ...evaluation, questions };
 };
 
-/**
- * Guarda las respuestas de una evaluación para un usuario.
- */
-const submitEvaluationResponses = async (userId, evaluationSlug, answers) => {
-  const client = await pool.connect();
-  try {
-    await client.query('BEGIN');
+const submitEvaluationResponses = async (userId, slug, answers) => {
+  const evalResult = await pool.query(
+    'SELECT id FROM evaluations WHERE slug = $1 AND is_active = TRUE',
+    [slug]
+  );
 
-    // 1. Obtener el ID de la evaluación a partir del slug
-    const evalRes = await client.query('SELECT id FROM evaluations WHERE slug = $1', [evaluationSlug]);
-    if (evalRes.rows.length === 0) {
-      throw new Error('Evaluación no válida.');
-    }
-    const evaluationId = evalRes.rows[0].id;
-
-    // 2. Crear una nueva entrada en la tabla de respuestas
-    const responseQuery = 'INSERT INTO evaluation_responses (user_id, evaluation_id, answers) VALUES ($1, $2, $3) RETURNING id, completed_at';
-    const responseValues = [userId, evaluationId, JSON.stringify(answers)];
-    const responseResult = await client.query(responseQuery, responseValues);
-
-    await client.query('COMMIT');
-
-    return {
-      message: 'Encuesta completada con éxito.',
-      response: responseResult.rows[0],
-    };
-  } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('Error al guardar las respuestas de la encuesta:', error);
-    throw new Error('No se pudieron guardar las respuestas.');
-  } finally {
-    client.release();
+  if (evalResult.rows.length === 0) {
+    const err = new Error('Evaluacion no encontrada.');
+    err.status = 404;
+    throw err;
   }
+
+  const evaluationId = evalResult.rows[0].id;
+
+  const { rows: requiredQuestions } = await pool.query(
+    'SELECT id FROM questions WHERE evaluation_id = $1 AND required = TRUE',
+    [evaluationId]
+  );
+
+  const answeredIds = answers.map((a) => a.question_id);
+  const missingRequired = requiredQuestions.filter((q) => !answeredIds.includes(q.id));
+
+  if (missingRequired.length > 0) {
+    const err = new Error('Debes responder todas las preguntas obligatorias.');
+    err.status = 400;
+    throw err;
+  }
+
+  const { rows: responseRows } = await pool.query(
+    'INSERT INTO evaluation_responses (user_id, evaluation_id) VALUES ($1, $2) RETURNING id',
+    [userId, evaluationId]
+  );
+
+  const responseId = responseRows[0].id;
+
+  for (const answer of answers) {
+    await pool.query(
+      'INSERT INTO response_answers (response_id, question_id, answer) VALUES ($1, $2, $3)',
+      [responseId, answer.question_id, answer.answer]
+    );
+  }
+
+  return { response_id: responseId, message: 'Evaluacion completada correctamente.' };
 };
 
-module.exports = {
-  getActiveEvaluations,
-  getEvaluationWithQuestions,
-  submitEvaluationResponses,
-  // getMyHistory se implementaría aquí también
+const getMyHistory = async (userId) => {
+  const { rows } = await pool.query(
+    `SELECT er.id, er.completed_at, e.title, e.slug
+     FROM evaluation_responses er
+     JOIN evaluations e ON e.id = er.evaluation_id
+     WHERE er.user_id = $1
+     ORDER BY er.completed_at DESC`,
+    [userId]
+  );
+  return rows;
 };
+
+module.exports = { getActiveEvaluations, getEvaluationWithQuestions, submitEvaluationResponses, getMyHistory };

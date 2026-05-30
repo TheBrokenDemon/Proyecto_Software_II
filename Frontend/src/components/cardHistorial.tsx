@@ -1,38 +1,30 @@
-import { useState } from "react";
-import "./cssComponents/estadoCard.css"
+import "../estilos/estadoCard.css";
 
-export default function CardHistorial(props) {
-    const [box, setBox] = useState(false);
-    console.log();
+interface CardHistorialProps {
+    img: string;
+    fecha: string;
+    estado: string;
+    description?: string; // Opcional
+}
 
-    const backgroundImage = {
-        backgroundImage:
-            `url(${props.img})`,
-    }
-
-    const displayComment = () => {
-        setBox(!box);
-    }
-
-    console.log(box)
-
+export default function CardHistorial(props: CardHistorialProps) {
     return (
         <div className="card">
-            <article className="estadoCard" style={backgroundImage}>
+            <div 
+                className="card-image-container" 
+                style={{ backgroundImage: `url(${props.img})` }}
+            >
+                {/* El contenido de la imagen ahora se maneja con CSS */}
+            </div>
+            <div className="card-content">
                 <p className="propFecha">{props.fecha}</p>
                 <h3 className="propEstado">{props.estado}</h3>
-                <p className="propDescription">{props.description}</p>
-                {!props.description && <p className="propDescriptionConditional">No se ha agregado una descripcion</p>}
-                <button onClick={displayComment}>Mostrar comentario</button>
-            
-                {box &&
-            
-                <div className="newBox">
-                        <p>Comentario: {props.comment}</p>
-                        <button onClick={displayComment}>Volver</button>
-                </div>}
-            </article>
-
+                {props.description ? (
+                    <p className="propDescription">{props.description}</p>
+                ) : (
+                    <p className="propDescriptionConditional">No se ha agregado una descripción.</p>
+                )}
+            </div>
         </div>
     )
 }

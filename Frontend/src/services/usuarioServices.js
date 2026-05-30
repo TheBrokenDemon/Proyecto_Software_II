@@ -1,7 +1,7 @@
 // Este es el archivo que permite conectar backend con frontend (registro de usuario)
 
 // La URL base de tu API de backend. Según tu README, los endpoints están bajo /api
-const API_URL = "http://localhost:4000/api";
+const API_URL = "http://localhost:3000/api";
 
 // --- Funciones Auxiliares de Autenticación ---
 

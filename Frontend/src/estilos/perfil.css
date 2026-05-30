@@ -1,0 +1,70 @@
+.profile-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.boxImage {
+    text-align: center;
+}
+
+.profileImage {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #3b82f6;
+}
+
+.profileInformation {
+    text-align: left;
+}
+
+.profileInformation h1 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.profileInformation p {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin: 0.5rem 0 0.2rem;
+}
+
+.profileInformation .username,
+.profileInformation .usergenero,
+.profileInformation .usermail,
+.profileInformation .userage {
+    color: #111827;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-top: 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.buttonModify {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.modificarButton {
+    display: inline-block;
+    background-color: #2563eb;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.modificarButton:hover {
+    background-color: #1d4ed8;
+}
