@@ -9,7 +9,7 @@ const authRoutes       = require('./routes/auth.routes');
 const userRoutes       = require('./routes/user.routes');
 const emotionalRoutes  = require('./routes/emotional.routes');
 const evaluationRoutes = require('./routes/evaluation.routes');
-
+const psychologistRoutes = require('./routes/psychologist.routes');
 const app = express();
 
 // ─── Seguridad y parseo ──────────────────────────────────────
@@ -31,7 +31,7 @@ app.use('/api/auth',        authRoutes);
 app.use('/api/users',       userRoutes);
 app.use('/api/emotional',   emotionalRoutes);
 app.use('/api/evaluations', evaluationRoutes);
-
+app.use('/api/psychologist', psychologistRoutes);
 // ─── Ruta no encontrada ──────────────────────────────────────
 app.use((_req, res) => {
   res.status(404).json({ message: 'Ruta no encontrada.' });

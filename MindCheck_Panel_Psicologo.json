@@ -1,0 +1,66 @@
+{
+	"info": {
+		"_postman_id": "c3d4e5f6-g7h8-i9j0-1234-56789abcdef0",
+		"name": "MindCheck ULima - Panel Psicólogo",
+		"description": "Pruebas del Control de Acceso Basado en Roles (RBAC) para el Panel del Profesional.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. GET Dashboard (Acceso Autorizado)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token_psicologo}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/psychologist/dashboard",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"psychologist",
+						"dashboard"
+					]
+				},
+				"description": "Petición realizada con el JWT de un usuario con rol 'psicologo'. Debe retornar el dashboard (Status 200)."
+			},
+			"response": []
+		},
+		{
+			"name": "2. GET Dashboard (Acceso Denegado - Estudiante)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token_estudiante}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/psychologist/dashboard",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"psychologist",
+						"dashboard"
+					]
+				},
+				"description": "Petición realizada con el JWT de un usuario regular (rol 'estudiante'). El middleware de seguridad debe interceptar y retornar Status 403 Forbidden."
+			},
+			"response": []
+		}
+	]
+}
