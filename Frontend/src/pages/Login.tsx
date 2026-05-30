@@ -1,125 +1,78 @@
-/**
- * Login.tsx
- * Inicio de sesión – conectado al backend real.
- * Redirige según rol: psicologo → /psychologist-panel | estudiante → /dashboard
- */
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { loginUser } from '../services/usuarioServices'
-import './css/variables.css'
-import './css/base.css'
-import './css/landing.css'
-import './css/components.css'
-import './css/auth.css'
-import './css/responsive.css'
+import React, { useState } from 'react';
+import { useForm, type SubmitHandler } from 'react-hook-form';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import './css/Login.css'; // Asegúrate de tener estilos para esta página
+
+type FormValues = {
+  email: string;
+  password: string;
+};
 
 export default function Login() {
-  const navigate = useNavigate()
-  const [email, setEmail]       = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError]       = useState('')
-  const [loading, setLoading]   = useState(false)
+  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
+  const [serverError, setServerError] = useState('');
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-
-    if (!email || !password) {
-      setError('Completa todos los campos.')
-      return
-    }
-
-    setLoading(true)
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
-      const data = await loginUser({ email, password })
-      // Guardar datos de sesión
-      if (data.token) localStorage.setItem('authToken', data.token)
-      if (data.user?.role) localStorage.setItem('userRole', data.user.role)
-      if (data.user?.full_name) localStorage.setItem('userName', data.user.full_name)
+      setServerError(''); // Limpia errores previos
+      await login(data);
+      
+      // --- ¡ESTA ES LA SOLUCIÓN! ---
+      // Después de un login exitoso, redirigimos al dashboard.
+      navigate('/dashboard');
 
-      // Redirigir según rol
-      if (data.user?.role === 'psicologo') {
-        navigate('/psychologist-panel')
-      } else {
-        navigate('/dashboard')
-      }
-    } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesión.')
-    } finally {
-      setLoading(false)
+    } catch (error: any) {
+      console.error("Error en el inicio de sesión:", error);
+      setServerError(error.message || 'Error al iniciar sesión. Por favor, verifica tus credenciales.');
     }
-  }
+  };
 
   return (
-    <nav>
-      <title>Login – MindCheck</title>
-      <div>
-        <section className="auth-layout">
-          <div className="auth-panel">
-            <button className="back-btn">
-              <li><Link to="/">← Volver</Link></li>
-            </button>
+    <div className="login-container">
+      <div className="login-card">
+        <Link to="/" className="back-link">
+          ← Volver
+        </Link>
 
-            <div className="auth-header">
-              <div className="logo-mark small">✦</div>
-              <h2>Bienvenida de vuelta</h2>
-              <p>Nos alegra verte de nuevo</p>
-            </div>
+        <div className="login-header">
+          <h1>Bienvenido de vuelta</h1>
+          <p>Inicia sesión para continuar en MindCheck</p>
+        </div>
 
-            <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div className="form-group">
-                <label>Correo electrónico</label>
-                <input
-                  type="email"
-                  placeholder="hola@ejemplo.com"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Contraseña</label>
-                <input
-                  type="password"
-                  placeholder="Tu contraseña"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                />
-              </div>
-
-              {error && (
-                <p style={{
-                  background: '#fee2e2', color: '#991b1b',
-                  padding: '10px 14px', borderRadius: '10px',
-                  fontSize: '0.875rem', margin: 0
-                }}>{error}</p>
-              )}
-
-              <button
-                type="submit"
-                className="btn-primary full"
-                disabled={loading}
-                style={{ opacity: loading ? 0.7 : 1 }}
-              >
-                {loading ? 'Ingresando...' : 'Entrar'}
-              </button>
-            </form>
-
-            <Link to="/recovery" style={{ display: 'block', marginTop: '12px', fontSize: '0.875rem' }}>
-              ¿Olvidaste tu contraseña?
-            </Link>
-
-            <Link to="/professional-access" className="professional-login-link">
-              Acceso para profesionales de psicología
-            </Link>
+        <form className="login-form" onSubmit={handleSubmit(onSubmit)}>
+          <div className="form-group">
+            <label htmlFor="email">Correo Electrónico</label>
+            <input 
+              id="email" 
+              type="email" 
+              {...register("email", { required: "El correo es obligatorio" })} 
+            />
+            {errors.email && <p className="error-text">{errors.email.message}</p>}
           </div>
 
-          <div className="auth-deco">
-            <div className="deco-quote">"Cuida tus emociones"</div>
-            <div className="deco-author">— Tu bienestar importa</div>
+          <div className="form-group">
+            <label htmlFor="password">Contraseña</label>
+            <input 
+              id="password" 
+              type="password" 
+              {...register("password", { required: "La contraseña es obligatoria" })} 
+            />
+            {errors.password && <p className="error-text">{errors.password.message}</p>}
           </div>
-        </section>
+
+          {serverError && <p className="server-error">{serverError}</p>}
+
+          <button type="submit" className="submit-button">Iniciar Sesión</button>
+
+          <div className="login-footer">
+            <p>¿No tienes una cuenta? <Link to="/register">Regístrate</Link></p>
+            <Link to="/recovery">¿Olvidaste tu contraseña?</Link>
+          </div>
+        </form>
       </div>
-    </nav>
-  )
+    </div>
+  );
 }

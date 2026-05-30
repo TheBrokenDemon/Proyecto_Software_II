@@ -19,21 +19,23 @@ export const logoutUser = () => {
  * @returns {Promise<object>} - Los datos del usuario registrado.
  */
 export const registerUser = async (userData) => {
-  const response = await fetch(`${API_URL}/auth/register`, {
+  const response = await fetch(`${API_URL}/auth/register`, { // Asegúrate que la ruta es correcta
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(userData),
   });
-
   if (!response.ok) {
     const errorData = await response.json();
     // Lanza un error con el mensaje del backend para poder mostrarlo en la UI.
     throw new Error(errorData.message || 'Error al registrar el usuario.');
   }
-
-  return response.json();
+  const data = await response.json();
+  if (data.token) {
+    localStorage.setItem('authToken', data.token);
+  }
+  return data;
 };
 
 /**

@@ -39,8 +39,19 @@ app.use((_req, res) => {
 
 // ─── Error handler global ────────────────────────────────────
 app.use((err, _req, res, _next) => {
-  console.error('Error no controlado:', err.message);
-  res.status(500).json({ message: 'Error interno del servidor.' });
+  // Loguear el error completo en la consola del servidor
+  console.error('❌ ERROR NO CONTROLADO:', err);
+
+  const statusCode = err.status || 500;
+  const message = err.message || 'Error interno del servidor.';
+
+  // Enviar una respuesta de error más detallada en desarrollo
+  const errorResponse = { message };
+  if (process.env.NODE_ENV === 'development') {
+    errorResponse.stack = err.stack;
+  }
+
+  res.status(statusCode).json(errorResponse);
 });
 
 // ─── Arranque ────────────────────────────────────────────────

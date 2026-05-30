@@ -65,15 +65,11 @@ export function renderProfile(): void {
 
   const user = state.currentUser;
 
-  (
-    document.getElementById('profile-name-input')
-    as HTMLInputElement
-  ).value = user.name;
+  const nameInput = document.getElementById('profile-name-input') as HTMLInputElement;
+  if (nameInput) nameInput.value = user.name;
 
-  (
-    document.getElementById('profile-email-input')
-    as HTMLInputElement
-  ).value = user.email;
+  const emailInput = document.getElementById('profile-email-input') as HTMLInputElement;
+  if (emailInput) emailInput.value = user.email;
 }
 
 export function handleProfileSave(): void {
