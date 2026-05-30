@@ -1,0 +1,112 @@
+{
+	"info": {
+		"_postman_id": "b1c2d3e4-f5a6-7b8c-9d0e-1f2a3b4c5d6e",
+		"name": "MindCheck ULima - Perfil de Usuario",
+		"description": "Pruebas de lectura y actualización del perfil usando Autenticación mediante JWT (Authorization: Bearer token).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET Perfil del Usuario",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/users/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users",
+						"profile"
+					]
+				},
+				"description": "Obtiene la información completa del perfil del usuario logueado en base al token proveído."
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH Actualizar Perfil (Éxito)",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"full_name\": \"Ana García López\",\n  \"age\": 22\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/users/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users",
+						"profile"
+					]
+				},
+				"description": "Envia datos válidos para actualizar parcialmente el registro. Retorna status 200."
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH Actualizar Perfil (Datos Inválidos)",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"age\": 10,\n  \"gender\": \"No Especificado\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/users/profile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users",
+						"profile"
+					]
+				},
+				"description": "Fuerza la validación del middleware express-validator enviando una edad prohibida y género inexistente. Retorna status 400."
+			},
+			"response": []
+		}
+	]
+}

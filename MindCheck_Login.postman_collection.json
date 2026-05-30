@@ -1,0 +1,74 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
+		"name": "MindCheck ULima - Login",
+		"description": "Colección de pruebas para la integración del endpoint de inicio de sesión de MindCheck ULima.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Petición 1: Login Exitoso",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"ana@ulima.edu.pe\",\n  \"password\": \"mipassword123\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				},
+				"description": "Envía credenciales correctas. Retorna status 200, los datos del usuario y el token JWT."
+			},
+			"response": []
+		},
+		{
+			"name": "Petición 2: Login Fallido (Contraseña Incorrecta)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"ana@ulima.edu.pe\",\n  \"password\": \"contraseña_equivocada\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				},
+				"description": "Intenta iniciar sesión con una contraseña incorrecta. Retorna código 401."
+			},
+			"response": []
+		}
+	]
+} 
