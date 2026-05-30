@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { pool } = require('../config/db');
@@ -85,4 +86,57 @@ const logoutUser = async (token) => {
   await pool.query('DELETE FROM sessions WHERE token = $1', [token]);
 };
 
-module.exports = { registerUser, loginUser, logoutUser };
+const forgotPasswordUser = async (email) => {
+  const normalizedEmail = email.toLowerCase();
+  
+  // 1. Verificar si el usuario existe
+  const { rows } = await pool.query(
+    'SELECT id, full_name FROM users WHERE email = $1',
+    [normalizedEmail]
+  );
+  if (rows.length === 0) {
+    const err = new Error('No existe una cuenta asociada a este correo.');
+    err.status = 404;
+    throw err;
+  }
+  const user = rows[0];
+  // 2. Generar token aleatorio (criptográficamente seguro)
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  
+  // 3. Calcular expiración (15 minutos a partir de ahora)
+  const expiresAt = new Date();
+  expiresAt.setMinutes(expiresAt.getMinutes() + 15);
+  // 4. Guardar token y expiración en la base de datos
+  await pool.query(
+    'UPDATE users SET reset_token = $1, reset_token_expires_at = $2 WHERE id = $3',
+    [resetToken, expiresAt, user.id]
+  );
+  // Retornamos la info para que el controlador simule el envío
+  return { email: normalizedEmail, name: user.full_name, resetToken };
+};
+const resetPasswordUser = async ({ token, newPassword }) => {
+  // 1. Buscar al usuario cuyo token coincida y NO haya expirado
+  const { rows } = await pool.query(
+    'SELECT id FROM users WHERE reset_token = $1 AND reset_token_expires_at > NOW()',
+    [token]
+  );
+  if (rows.length === 0) {
+    const err = new Error('El token es inválido o ha expirado.');
+    err.status = 400;
+    throw err;
+  }
+  const userId = rows[0].id;
+  // 2. Encriptar la nueva contraseña
+  const password_hash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
+  // 3. Actualizar la BD y LIMPIAR los campos del token (usado 1 sola vez)
+  await pool.query(
+    'UPDATE users SET password_hash = $1, reset_token = NULL, reset_token_expires_at = NULL WHERE id = $2',
+    [password_hash, userId]
+  );
+  // 4. (Opcional/Seguridad) Cerrar todas las sesiones activas del usuario
+  await pool.query('DELETE FROM sessions WHERE user_id = $1', [userId]);
+};
+
+
+
+module.exports = { registerUser, loginUser, logoutUser, forgotPasswordUser, resetPasswordUser };

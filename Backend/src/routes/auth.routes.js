@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { body } = require('express-validator');
-const { register, login, logout } = require('../controllers/auth.controller');
+const { register, login, logout, forgotPassword, resetPassword } = require('../controllers/auth.controller');
 const { authenticate } = require('../middlewares/auth.middleware');
 const { handleValidationErrors } = require('../middlewares/validate.middleware');
 
@@ -43,6 +43,29 @@ router.post(
   ],
   handleValidationErrors,
   login
+);
+
+// POST /api/auth/forgot-password
+router.post(
+  '/forgot-password',
+  [
+    body('email')
+      .normalizeEmail()
+      .isEmail().withMessage('Ingresa un correo electrónico válido.'),
+  ],
+  handleValidationErrors,
+  forgotPassword
+);
+// POST /api/auth/reset-password
+router.post(
+  '/reset-password',
+  [
+    body('token').notEmpty().withMessage('El token de recuperación es obligatorio.'),
+    body('newPassword')
+      .isLength({ min: 8 }).withMessage('La nueva contraseña debe tener al menos 8 caracteres.'),
+  ],
+  handleValidationErrors,
+  resetPassword
 );
 
 // POST /api/auth/logout  (requiere token válido)
