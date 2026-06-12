@@ -1,0 +1,73 @@
+.auth-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+.auth-panel {
+  background: var(--warm-white);
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.2rem;
+  position: relative;
+}
+
+.auth-deco {
+  background: var(--charcoal);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-header h2 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+}
+
+.auth-header p {
+  color: var(--muted);
+}
+
+.back-btn {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.deco-quote {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--cream);
+  line-height: 1.4;
+}
+
+.deco-author {
+  color: var(--muted);
+  margin-top: 1rem;
+}
+
+.success-box {
+  text-align: center;
+  padding: 2rem;
+  background: var(--sage-light);
+  border-radius: var(--radius-md);
+}
+
+.professional-login-link {
+  text-align: center;
+  color: #4f46e5;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.professional-login-link:hover {
+  text-decoration: underline;
+}

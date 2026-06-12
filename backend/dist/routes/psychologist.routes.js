@@ -1,0 +1,16 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const psychologist_controller_1 = require("../controllers/psychologist.controller");
+const auth_middleware_1 = require("../middlewares/auth.middleware");
+const router = (0, express_1.Router)();
+router.use(auth_middleware_1.authenticate, (0, auth_middleware_1.authorize)('psicologo'));
+const wrap = (fn) => (req, res, next) => fn(req, res, next);
+router.get('/students', wrap(psychologist_controller_1.listStudents));
+router.get('/students/:studentId', wrap(psychologist_controller_1.studentResponses));
+router.post('/students/:studentId/citation', wrap(psychologist_controller_1.citateStudent));
+router.post('/students/:studentId/followups', wrap(psychologist_controller_1.addFollowup));
+router.get('/students/:studentId/followups', wrap(psychologist_controller_1.listFollowups));
+router.patch('/followups/:followupId', wrap(psychologist_controller_1.patchFollowup));
+router.post('/students/:studentId/appointments', wrap(psychologist_controller_1.addAppointment));
+exports.default = router;
