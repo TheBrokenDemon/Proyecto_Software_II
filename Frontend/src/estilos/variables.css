@@ -1,0 +1,157 @@
+:root {
+  --cream: #faf6f1;
+  --warm-white: #fff9f4;
+  --blush: #f2d9d0;
+  --rose: #c4826a;
+  --rose-dark: #a0614e;
+  --sage: #8aab9a;
+  --sage-light: #c8ddd5;
+  --charcoal: #2c2828;
+  --charcoal-soft: #4a4242;
+  --muted: #9e9090;
+  --border: #e8ddd8;
+  --shadow: rgba(44,40,40,0.08);
+  --shadow-deep: rgba(44,40,40,0.18);
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 36px;
+
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Default */
+body {
+  background-color: #ffffff;
+  color: #111827;
+}
+
+.theme-naturaleza {
+  background-color: #EAF4F4 !important;
+  color: #1B2631 !important;
+}
+
+.theme-naturaleza .main-header {
+  background-color: #D5F5E3 !important;
+  border-color: #A9DFBF !important;
+}
+
+.theme-naturaleza .nav-link {
+  color: #1E8449 !important;
+}
+
+/* ════════════════════════════════════════════════════════════ */
+/* TEMA OSCURO (descanso) — versión completa                     */
+/* ════════════════════════════════════════════════════════════ */
+
+.theme-descanso {
+  background-color: #121212 !important;
+  color: #E0E0E0 !important;
+}
+
+/* ── Header y navegación ──────────────────────────────────── */
+.theme-descanso .main-header {
+  background-color: #1E1E2E !important;
+  border-color: #2C2C3E !important;
+}
+.theme-descanso .nav-link        { color: #B0B0C0 !important; }
+.theme-descanso .nav-link:hover  { color: #FFFFFF !important; }
+.theme-descanso .nav-link.active { color: #90CAF9 !important; border-bottom-color: #90CAF9 !important; }
+.theme-descanso .logo            { color: #FFFFFF !important; }
+
+/* ── Menú de usuario / dropdown ───────────────────────────── */
+.theme-descanso .user-menu-button:hover { background-color: #2A2A3C !important; }
+.theme-descanso .user-name            { color: #E0E0E0 !important; }
+.theme-descanso .dropdown-menu {
+  background-color: #1E1E2E !important;
+  border-color: #2C2C3E !important;
+}
+.theme-descanso .dropdown-header     { border-color: #2C2C3E !important; }
+.theme-descanso .dropdown-user-name  { color: #FFFFFF !important; }
+.theme-descanso .dropdown-user-email { color: #A0A0B0 !important; }
+
+/* ── Superficies / tarjetas / contenedores ────────────────── */
+.theme-descanso .profile-container,
+.theme-descanso .profile-card,
+.theme-descanso .history-container,
+.theme-descanso .history-item,
+.theme-descanso .dashboard-container,
+.theme-descanso .stat-card,
+.theme-descanso .card,
+.theme-descanso .survey-page-container,
+.theme-descanso .survey-layout,
+.theme-descanso .question-item,
+.theme-descanso .result-card {
+  background-color: #1E1E2E !important;
+  color: #E0E0E0 !important;
+  border-color: #2C2C3E !important;
+}
+
+/* ── Textos generales (títulos, párrafos, etiquetas) ──────── */
+.theme-descanso h1,
+.theme-descanso h2,
+.theme-descanso h3,
+.theme-descanso p,
+.theme-descanso span,
+.theme-descanso label,
+.theme-descanso small,
+.theme-descanso .profile-info-label,
+.theme-descanso .profile-info-value,
+.theme-descanso .stat-card-value,
+.theme-descanso .stat-card-label,
+.theme-descanso .question-text,
+.theme-descanso .propEstado,
+.theme-descanso .propDescription,
+.theme-descanso .propFecha {
+  color: #E0E0E0 !important;
+}
+/* Textos secundarios un poco más tenues */
+.theme-descanso .profile-avatar-hint,
+.theme-descanso .history-item-hour,
+.theme-descanso .history-empty,
+.theme-descanso .form-group small {
+  color: #9A9AAA !important;
+}
+
+/* ── Inputs, selects y textareas ──────────────────────────── */
+.theme-descanso input,
+.theme-descanso select,
+.theme-descanso textarea {
+  background-color: #2A2A3C !important;
+  color: #E0E0E0 !important;
+  border-color: #3A3A4E !important;
+}
+.theme-descanso input::placeholder { color: #8A8A9A !important; }
+.theme-descanso input:disabled {
+  background-color: #232333 !important;
+  color: #9A9AAA !important;
+}
+
+/* ── Encuesta: opciones y barra de progreso ───────────────── */
+.theme-descanso .option-button:not(.selected) {
+  background-color: #2A2A3C !important;
+  color: #D0D0DA !important;
+  border-color: #3A3A4E !important;
+}
+.theme-descanso .progress-bar-container { background-color: #2C2C3E !important; }
+
+/* ── Badges y mensajes de estado (mantienen color, legibles) ─ */
+.theme-descanso .history-item-badge {
+  background-color: #14532D !important;
+  color: #BBF7D0 !important;
+}
+.theme-descanso .history-item-icon { background-color: #14532D !important; }
+.theme-descanso .server-message.success {
+  background-color: #14532D !important;
+  color: #BBF7D0 !important;
+  border-color: #166534 !important;
+}
+.theme-descanso .server-message.error {
+  background-color: #4C1D1D !important;
+  color: #FCA5A5 !important;
+  border-color: #7F1D1D !important;
+}

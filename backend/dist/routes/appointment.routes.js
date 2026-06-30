@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const psychologist_controller_1 = require("../controllers/psychologist.controller");
+const auth_middleware_1 = require("../middlewares/auth.middleware");
+const router = (0, express_1.Router)();
+router.use(auth_middleware_1.authenticate, (0, auth_middleware_1.authorize)('estudiante'));
+const wrap = (fn) => (req, res, next) => fn(req, res, next);
+router.get('/', wrap(psychologist_controller_1.myAppointments));
+router.patch('/:appointmentId', wrap(psychologist_controller_1.replyAppointment));
+exports.default = router;

@@ -1,0 +1,199 @@
+.profile-container {
+  max-width: 1080px;
+  margin: 2rem auto;
+  padding: 1rem 2rem 3rem;
+}
+
+.perfil-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* ── Columna izquierda: identidad ── */
+.perfil-side-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: sticky;
+  top: 2rem;
+}
+
+.perfil-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #1B4332;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.perfil-avatar img  { width: 100%; height: 100%; object-fit: cover; }
+.perfil-avatar span { font-size: 3rem; font-weight: 700; color: #fff; }
+
+.perfil-name { font-size: 1.4rem; margin: 0.2rem 0; color: #111827; }
+
+.role-badge {
+  display: inline-block;
+  background: #DBEAFE;
+  color: #1E40AF;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 0.6rem;
+}
+
+.perfil-email {
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin-bottom: 1.2rem;
+  word-break: break-all;
+}
+
+.modificarButton {
+  display: inline-block;
+  background-color: #2563eb;
+  color: #fff;
+  padding: 0.7rem 1.6rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+.modificarButton:hover { background-color: #1d4ed8; }
+
+.profile-avatar-hint { font-size: 0.78rem; color: #9CA3AF; margin-top: 0.8rem; }
+
+/* ── Columna derecha ── */
+.perfil-main { display: flex; flex-direction: column; gap: 1.5rem; }
+
+.perfil-info-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  padding: 1.8rem 2rem;
+}
+.perfil-info-card h1 { font-size: 1.6rem; margin: 0 0 1.2rem; color: #111827; }
+
+.profile-info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #E5E7EB;
+}
+.profile-info-row:last-child { border-bottom: none; }
+.profile-info-label { font-weight: 600; color: #4B5563; }
+.profile-info-value { color: #1B4332; }
+
+/* ── Accesos rápidos ── */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+.quick-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  padding: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.quick-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+  border-color: #93c5fd;
+}
+.quick-card-icon  { font-size: 1.8rem; }
+.quick-card-title { font-weight: 700; color: #111827; }
+.quick-card-desc  { font-size: 0.85rem; color: #6b7280; }
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  .perfil-grid { grid-template-columns: 1fr; }
+  .perfil-side-card { position: static; }
+}
+
+/* ════════ TEMA OSCURO (descanso) para el perfil ════════ */
+.theme-descanso .perfil-side-card,
+.theme-descanso .perfil-info-card,
+.theme-descanso .quick-card {
+  background: #1E1E2E !important;
+  border-color: #2C2C3E !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+}
+.theme-descanso .perfil-name,
+.theme-descanso .perfil-info-card h1,
+.theme-descanso .quick-card-title { color: #FFFFFF !important; }
+.theme-descanso .profile-info-value { color: #C8E6D5 !important; }
+.theme-descanso .profile-info-label { color: #B0B0C0 !important; }
+.theme-descanso .perfil-email,
+.theme-descanso .quick-card-desc,
+.theme-descanso .profile-avatar-hint { color: #9A9AAA !important; }
+.theme-descanso .role-badge { background: #1E3A5F !important; color: #93C5FD !important; }
+.theme-descanso .quick-card:hover { border-color: #3B82F6 !important; }
+.theme-descanso .profile-info-row { border-color: #2C2C3E !important; }
+
+/* ── Resumen de actividad ── */
+.activity-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.stat-pill {
+  background: #F0F7FF;
+  border: 1px solid #DBEAFE;
+  border-radius: 12px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  text-align: center;
+}
+.stat-pill-value { font-size: 2rem; font-weight: 800; color: #2563eb; line-height: 1; }
+.stat-pill-label { font-size: 0.82rem; color: #6b7280; }
+.activity-last { font-size: 0.92rem; color: #4B5563; margin: 0; }
+.activity-last strong { color: #1B4332; }
+.activity-link { color: #2563eb; font-weight: 600; text-decoration: none; }
+.activity-loading { color: #9CA3AF; }
+
+/* ── Tarjeta de bienestar ── */
+.tip-card {
+  background: linear-gradient(135deg, #ECFDF5, #F0FDFA);
+  border: 1px solid #A7F3D0;
+  border-radius: 16px;
+  padding: 1.4rem 1.6rem;
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+}
+.tip-card-icon  { font-size: 1.6rem; }
+.tip-card-title { font-weight: 700; color: #065F46; margin: 0 0 0.2rem; }
+.tip-card-body  { font-size: 0.9rem; color: #047857; margin: 0; }
+
+/* ── Tema oscuro para los nuevos bloques ── */
+.theme-descanso .stat-pill { background: #1A2438 !important; border-color: #2C3A52 !important; }
+.theme-descanso .stat-pill-value { color: #90CAF9 !important; }
+.theme-descanso .stat-pill-label,
+.theme-descanso .activity-last,
+.theme-descanso .activity-loading { color: #9A9AAA !important; }
+.theme-descanso .activity-last strong { color: #C8E6D5 !important; }
+.theme-descanso .tip-card { background: #14261F !important; border-color: #1E3A2E !important; }
+.theme-descanso .tip-card-title { color: #6EE7B7 !important; }
+.theme-descanso .tip-card-body  { color: #A7F3D0 !important; }

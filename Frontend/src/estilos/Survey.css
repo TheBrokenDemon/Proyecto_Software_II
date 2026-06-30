@@ -1,0 +1,183 @@
+/* Estilos para la página de la Encuesta (Survey.tsx) */
+
+.survey-page-container {
+  background-color: #f4f7f4; /* Un fondo suave y neutro */
+  min-height: calc(100vh - 65px); /* Ajusta la altura al viewport menos el header */
+  padding: 2rem 1rem;
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+.survey-layout {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  padding: 2rem 2.5rem;
+  position: relative;
+}
+
+.survey-back-btn {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  color: #6b7e71;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.survey-back-btn:hover {
+  color: #1e2d23;
+}
+
+.survey-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-top: 1rem;
+}
+
+.survey-header h2 {
+  font-family: 'Lora', serif;
+  font-size: 2.2rem;
+  color: #1a2e1f;
+  margin-bottom: 0.5rem;
+}
+
+.survey-header p {
+  color: #6b7e71;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.survey-progress {
+  margin-bottom: 2.5rem;
+}
+
+.progress-bar-container {
+  background-color: #e2ebe4;
+  border-radius: 100px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  background-color: #4a8c6f;
+  height: 100%;
+  border-radius: 100px;
+  transition: width 0.4s ease-in-out;
+}
+
+.progress-text {
+  text-align: right;
+  font-size: 0.8rem;
+  color: #6b7e71;
+  margin-top: 0.5rem;
+  font-weight: 500;
+}
+
+.questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.question-item {
+  background-color: #f9fbf9;
+  padding: 1.5rem;
+  border-radius: 14px;
+  border: 1px solid #e2ebe4;
+}
+
+.question-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a2e1f;
+  margin: 0 0 1.25rem 0;
+  line-height: 1.5;
+}
+
+.question-text .required-star {
+  color: #b91c1c;
+  margin-left: 4px;
+}
+
+.options-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.option-button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 100px;
+  border: 2px solid #e2ebe4;
+  background-color: #ffffff;
+  color: #4b5563;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.option-button:hover {
+  border-color: #c8ddd5;
+  background-color: #f4f7f4;
+}
+
+.option-button.selected {
+  border-color: #4a8c6f;
+  background-color: #4a8c6f;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.survey-footer {
+  margin-top: 2.5rem;
+  text-align: center;
+}
+
+.survey-error {
+  color: #b91c1c;
+  background-color: #fee2e2;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.survey-submit-button {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  background-color: #2d6349;
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.survey-submit-button:hover:not(:disabled) {
+  background-color: #1e2d23;
+}
+
+.survey-submit-button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.survey-loading, .survey-error-fullpage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  font-size: 1.2rem;
+  color: #6b7280;
+}
+
+.survey-error-fullpage {
+  color: #b91c1c;
+}
