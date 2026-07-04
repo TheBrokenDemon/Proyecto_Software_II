@@ -1,4 +1,4 @@
- import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -62,6 +62,12 @@ export default function Header() {
                             </NavLink>
                             <NavLink to="/tips" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
                                 Tips
+                            </NavLink>
+                            <NavLink to="/seguimientos" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+                                Seguimiento
+                            </NavLink>
+                            <NavLink to="/citas" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+                                Citas
                             </NavLink>
                         </>
                     )}

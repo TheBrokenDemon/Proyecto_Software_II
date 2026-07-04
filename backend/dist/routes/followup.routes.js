@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_middleware_1 = require("../middlewares/auth.middleware");
+const followup_controller_1 = require("../controllers/followup.controller");
+const router = (0, express_1.Router)();
+router.use(auth_middleware_1.authenticate, (0, auth_middleware_1.authorize)('estudiante'));
+const wrap = (fn) => (req, res, next) => fn(req, res, next);
+router.get('/mine', wrap(followup_controller_1.myFollowups));
+exports.default = router;

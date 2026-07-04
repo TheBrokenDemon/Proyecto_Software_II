@@ -77,7 +77,9 @@ const getStudentResponses = async (studentId) => {
           WHERE user_id = $1
           ORDER BY checkin_date DESC
           LIMIT 14`, [studentId]);
-    return { student, responses: responsesWithAnswers, moodCheckins };
+    // Seguimientos / notas del psicólogo sobre este estudiante
+    const followups = await (0, exports.getStudentFollowups)(studentId);
+    return { student, responses: responsesWithAnswers, moodCheckins, followups };
 };
 exports.getStudentResponses = getStudentResponses;
 // ── Citación por email ────────────────────────────────────────

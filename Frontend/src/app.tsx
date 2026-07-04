@@ -20,7 +20,8 @@ import Historial from './pages/Historial';
 import Perfil from './pages/Perfil';
 import ModificarPerfil from './pages/ModificarPerfil';
 import Tips from './pages/Tips';
-
+import MisSeguimientos from './pages/MisSeguimientos';
+import Citas from './pages/Citas';
 
 // Páginas protegidas — psicólogo
 import PsychologistPanel from './pages/PsychologistPanel';
@@ -51,10 +52,15 @@ export default function App() {
                 <Route path="/history" element={
                     <ProtectedRoute allowedRoles={['estudiante']}><Historial /></ProtectedRoute>
                 } />
-                <Route path="/tips" element={               
+                <Route path="/tips" element={
                     <ProtectedRoute allowedRoles={['estudiante']}><Tips /></ProtectedRoute>
                 } />
-                
+                <Route path="/seguimientos" element={
+                    <ProtectedRoute allowedRoles={['estudiante']}><MisSeguimientos /></ProtectedRoute>
+                } />
+                <Route path="/citas" element={
+                    <ProtectedRoute allowedRoles={['estudiante']}><Citas /></ProtectedRoute>
+                } />
                 <Route path="/perfil" element={
                     <ProtectedRoute><Perfil /></ProtectedRoute>
                 } />

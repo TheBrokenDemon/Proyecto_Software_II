@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.replyAppointment = exports.myAppointments = exports.addAppointment = exports.listFollowups = exports.patchFollowup = exports.addFollowup = exports.citateStudent = exports.studentResponses = exports.listStudents = void 0;
+exports.respondAppointmentRequest = exports.appointmentRequests = exports.replyAppointment = exports.myAppointments = exports.addAppointment = exports.listFollowups = exports.patchFollowup = exports.addFollowup = exports.citateStudent = exports.studentResponses = exports.listStudents = void 0;
 const PsychologistFacade_1 = require("../utils/PsychologistFacade");
+const appointmentRequest_service_1 = require("../services/appointmentRequest.service");
 // ── Panel psicólogo ───────────────────────────────────────────
 const listStudents = async (_req, res) => {
     try {
@@ -116,3 +117,34 @@ const replyAppointment = async (req, res) => {
     }
 };
 exports.replyAppointment = replyAppointment;
+// ── Solicitudes de cita (iniciadas por el estudiante) ──────────
+const appointmentRequests = async (req, res) => {
+    try {
+        const requests = await (0, appointmentRequest_service_1.listRequests)();
+        res.status(200).json({ requests });
+    }
+    catch (err) {
+        res.status(err.status || 500).json({ message: err.message });
+    }
+};
+exports.appointmentRequests = appointmentRequests;
+const respondAppointmentRequest = async (req, res) => {
+    try {
+        const { status, response_note, confirmed_date } = req.body;
+        const valid = ['confirmada', 'reprogramada', 'rechazada'];
+        if (!valid.includes(status)) {
+            res.status(400).json({ message: 'Estado inválido.' });
+            return;
+        }
+        const request = await (0, appointmentRequest_service_1.respondRequest)(req.params.id, req.user.id, status, response_note, confirmed_date);
+        if (!request) {
+            res.status(404).json({ message: 'Solicitud no encontrada.' });
+            return;
+        }
+        res.status(200).json({ request });
+    }
+    catch (err) {
+        res.status(err.status || 500).json({ message: err.message });
+    }
+};
+exports.respondAppointmentRequest = respondAppointmentRequest;

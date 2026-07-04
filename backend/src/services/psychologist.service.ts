@@ -83,7 +83,8 @@ export const getStudentResponses = async (studentId: string) => {
             return { ...response, answers };
         })
     );
-// Check-ins de ánimo recientes del estudiante (carita + nota)
+
+    // Check-ins de ánimo recientes del estudiante (carita + nota)
     const { rows: moodCheckins } = await pool.query(
         `SELECT mood, note, TO_CHAR(checkin_date, 'YYYY-MM-DD') AS checkin_date
            FROM mood_checkins
@@ -93,8 +94,10 @@ export const getStudentResponses = async (studentId: string) => {
         [studentId]
     );
 
-    return { student, responses: responsesWithAnswers, moodCheckins };
+    // Seguimientos / notas del psicólogo sobre este estudiante
+    const followups = await getStudentFollowups(studentId);
 
+    return { student, responses: responsesWithAnswers, moodCheckins, followups };
 };
 
 // ── Citación por email ────────────────────────────────────────

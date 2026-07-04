@@ -13,4 +13,6 @@ router.post('/students/:studentId/followups', wrap(psychologist_controller_1.add
 router.get('/students/:studentId/followups', wrap(psychologist_controller_1.listFollowups));
 router.patch('/followups/:followupId', wrap(psychologist_controller_1.patchFollowup));
 router.post('/students/:studentId/appointments', wrap(psychologist_controller_1.addAppointment));
+router.get('/appointment-requests', wrap(psychologist_controller_1.appointmentRequests));
+router.patch('/appointment-requests/:id', wrap(psychologist_controller_1.respondAppointmentRequest));
 exports.default = router;

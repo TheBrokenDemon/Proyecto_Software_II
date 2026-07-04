@@ -15,6 +15,8 @@ const psychologist_routes_1 = __importDefault(require("./routes/psychologist.rou
 const psychologist_register_routes_1 = __importDefault(require("./routes/psychologist-register.routes"));
 const appointment_routes_1 = __importDefault(require("./routes/appointment.routes"));
 const mood_routes_1 = __importDefault(require("./routes/mood.routes"));
+const followup_routes_1 = __importDefault(require("./routes/followup.routes"));
+const appointmentRequest_routes_1 = __importDefault(require("./routes/appointmentRequest.routes"));
 const app = (0, express_1.default)();
 // ── Seguridad y parseo ────────────────────────────────────────
 app.use((0, helmet_1.default)());
@@ -41,6 +43,8 @@ app.use('/api/psychologist', psychologist_routes_1.default);
 app.use('/api/psychologist-register', psychologist_register_routes_1.default);
 app.use('/api/appointments', appointment_routes_1.default);
 app.use('/api/mood', mood_routes_1.default);
+app.use('/api/followups', followup_routes_1.default);
+app.use('/api/appointment-requests', appointmentRequest_routes_1.default);
 // ── 404 ───────────────────────────────────────────────────────
 app.use((_req, res) => {
     res.status(404).json({ message: 'Ruta no encontrada.' });

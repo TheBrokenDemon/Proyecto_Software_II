@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { API_URL, authHeaders } from '../services/api';
+import AppointmentRequests from '../components/AppointmentRequests';
 import '../estilos/PsychologistPanel.css';
 
 // ── Tipos ─────────────────────────────────────────────────────
@@ -32,7 +33,14 @@ interface EvalResponse {
     answers: Answer[];
 }
 interface MoodCheckin { mood: number; note: string | null; checkin_date: string; }
-interface StudentDetail { student: Student; responses: EvalResponse[]; moodCheckins?: MoodCheckin[]; }
+interface Followup { id: string; notes: string; status: string; created_at: string; psychologist_name?: string; }
+interface StudentDetail { student: Student; responses: EvalResponse[]; moodCheckins?: MoodCheckin[]; followups?: Followup[]; }
+
+const STATUS: Record<string, { label: string }> = {
+    pendiente:      { label: 'Pendiente' },
+    en_seguimiento: { label: 'En seguimiento' },
+    cerrado:        { label: 'Cerrado' },
+};
 
 const MOODS: Record<number, { emoji: string; label: string }> = {
     1: { emoji: '😢', label: 'Muy mal' },
@@ -41,7 +49,7 @@ const MOODS: Record<number, { emoji: string; label: string }> = {
     4: { emoji: '😄', label: 'Bien' },
 };
 
-type View = 'list' | 'detail';
+type View = 'list' | 'detail' | 'requests';
 
 const formatDate = (d: string | null) =>
     d ? new Date(d).toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
@@ -66,6 +74,15 @@ const api = {
         if (!res.ok) throw new Error('No se pudo enviar la citación.');
         return res.json();
     },
+    addFollowup: async (studentId: string, notes: string) => {
+        const res = await fetch(`${API_URL}/psychologist/students/${studentId}/followups`, {
+            method: 'POST',
+            headers: authHeaders(),
+            body: JSON.stringify({ notes }),
+        });
+        if (!res.ok) throw new Error('No se pudo guardar la nota.');
+        return res.json();
+    },
 };
 
 // ── Componente ────────────────────────────────────────────────
@@ -86,6 +103,23 @@ export default function PsychologistPanel() {
     const [activeEval, setActiveEval] = useState<EvalResponse | null>(null);
     const [citationSent, setCitationSent] = useState<string | null>(null);
     const [citationLoading, setCitationLoading] = useState(false);
+    const [newNote, setNewNote] = useState('');
+    const [savingNote, setSavingNote] = useState(false);
+
+    const handleAddNote = async (studentId: string) => {
+        if (!newNote.trim()) return;
+        setSavingNote(true);
+        try {
+            await api.addFollowup(studentId, newNote.trim());
+            setNewNote('');
+            const det = await api.getStudentDetail(studentId);
+            setDetail(det);
+        } catch (e: any) {
+            setError(e.message);
+        } finally {
+            setSavingNote(false);
+        }
+    };
 
     const loadStudents = useCallback(async () => {
         setLoading(true);
@@ -152,10 +186,11 @@ export default function PsychologistPanel() {
             {/* SIDEBAR */}
             <aside className="psych-sidebar">
                 <div className="psych-sidebar-brand">
-                <div>
-                <strong>Panel Psicológico</strong>
-                <small>Modo profesional</small>
-                </div>
+                    <div className="psych-brand-icon">🧠</div>
+                    <div>
+                        <strong>Panel Psicológico</strong>
+                        <small>Modo profesional</small>
+                    </div>
                 </div>
 
                 <nav className="psych-nav">
@@ -164,6 +199,12 @@ export default function PsychologistPanel() {
                         onClick={() => { setView('list'); setDetail(null); }}
                     >
                         <span>👥</span> Estudiantes
+                    </button>
+                    <button
+                        className={`psych-nav-item ${view === 'requests' ? 'active' : ''}`}
+                        onClick={() => { setView('requests'); setDetail(null); }}
+                    >
+                        <span>📅</span> Solicitudes
                     </button>
                     {detail && (
                         <button className={`psych-nav-item ${view === 'detail' ? 'active' : ''}`}>
@@ -235,7 +276,7 @@ export default function PsychologistPanel() {
                         ) : (
                             <div className="psych-student-list">
                                 {filtered.map(s => (
-                                        <div key={s.id} className={`psych-student-row risk-${s.risk_level || 'sin_datos'}`} onClick={() => openStudent(s)}>
+                                    <div key={s.id} className={`psych-student-row risk-${s.risk_level || 'sin_datos'}`} onClick={() => openStudent(s)}>
                                         <div className="psych-student-avatar">{s.full_name.charAt(0).toUpperCase()}</div>
                                         <div className="psych-student-info">
                                             <strong>{s.full_name}</strong>
@@ -263,6 +304,9 @@ export default function PsychologistPanel() {
                         )}
                     </>
                 )}
+
+                {/* VISTA: SOLICITUDES DE CITA */}
+                {view === 'requests' && <AppointmentRequests />}
 
                 {/* VISTA: DETALLE */}
                 {view === 'detail' && detail && (
@@ -309,6 +353,41 @@ export default function PsychologistPanel() {
                                 )}
                             </div>
                         )}
+
+                        <section className="psych-section">
+                            <h3 className="psych-section-title">📝 Notas y recomendaciones</h3>
+                            <div className="psych-note-form">
+                                <textarea
+                                    className="psych-note-input"
+                                    placeholder="Escribe una nota o recomendación para este estudiante..."
+                                    value={newNote}
+                                    maxLength={1000}
+                                    onChange={(e) => setNewNote(e.target.value)}
+                                />
+                                <button
+                                    className="psych-note-save"
+                                    onClick={() => handleAddNote(detail.student.id)}
+                                    disabled={!newNote.trim() || savingNote}
+                                >
+                                    {savingNote ? 'Guardando...' : 'Guardar nota'}
+                                </button>
+                            </div>
+                            {!detail.followups || detail.followups.length === 0 ? (
+                                <div className="psych-empty-sm">Aún no has registrado notas para este estudiante.</div>
+                            ) : (
+                                <div className="psych-note-list">
+                                    {detail.followups.map((f) => (
+                                        <div key={f.id} className="psych-note-item">
+                                            <p className="psych-note-text">{f.notes}</p>
+                                            <div className="psych-note-meta">
+                                                <span className={`psych-note-status status-${f.status}`}>{STATUS[f.status]?.label || f.status}</span>
+                                                <small>{formatDate(f.created_at)}</small>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </section>
 
                         <section className="psych-section">
                             <h3 className="psych-section-title">🙂 Estado de ánimo diario</h3>

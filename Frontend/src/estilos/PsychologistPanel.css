@@ -481,9 +481,9 @@
 .psych-mood-info small { color: #9ca3af; font-size: 0.78rem; }
 .psych-mood-note { margin: 0.3rem 0 0; color: #4b5563; font-style: italic; font-size: 0.85rem; }
 
-
 /* ════════════════════════════════════════════════════════════
    TEMA OSCURO (descanso) — redefine las variables del panel
+   y todo el panel se adapta automáticamente
 ════════════════════════════════════════════════════════════ */
 .theme-descanso .psych-wrapper {
   --ps-bg:           #121212;
@@ -497,6 +497,7 @@
   --ps-muted:        #9a9aaa;
   --ps-shadow:       0 4px 20px rgba(0, 0, 0, 0.45);
 }
+/* Fondos amarillos claros que se ven mal en oscuro */
 .theme-descanso .psych-student-row.flagged,
 .theme-descanso .psych-stat-card.accent {
   background: #2a2410 !important;
@@ -565,4 +566,51 @@
 
 @media (max-width: 640px) {
   .psych-risk-label { display: none; }
+}
+
+/* ── Notas / recomendaciones del psicólogo ── */
+.psych-note-form { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.2rem; }
+.psych-note-input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 70px;
+  border: 1px solid var(--ps-border);
+  border-radius: 10px;
+  padding: 0.7rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: vertical;
+  background: var(--ps-white);
+  color: var(--ps-text);
+}
+.psych-note-input:focus { outline: none; border-color: var(--ps-accent); }
+.psych-note-save {
+  align-self: flex-start;
+  background: var(--ps-accent);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.psych-note-save:disabled { opacity: 0.5; cursor: not-allowed; }
+.psych-note-list { display: flex; flex-direction: column; gap: 0.7rem; }
+.psych-note-item {
+  background: var(--ps-white);
+  border: 1px solid var(--ps-border);
+  border-left: 3px solid var(--ps-accent);
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+}
+.psych-note-text { margin: 0 0 0.5rem; color: var(--ps-text); font-size: 0.92rem; line-height: 1.45; }
+.psych-note-meta { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.psych-note-meta small { color: var(--ps-muted); font-size: 0.78rem; }
+.psych-note-status {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--ps-accent-light);
+  color: var(--ps-accent-deep);
 }

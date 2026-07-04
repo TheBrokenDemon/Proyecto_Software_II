@@ -1,0 +1,87 @@
+.citas-container { max-width: 760px; margin: 2rem auto; padding: 1rem 2rem 3rem; }
+.citas-header h1 { font-size: 1.8rem; margin: 0 0 0.3rem; color: #111827; }
+.citas-header p { margin: 0 0 1.8rem; color: #6b7280; }
+
+/* Formulario */
+.citas-form {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+.citas-label { font-weight: 600; color: #374151; font-size: 0.9rem; margin-bottom: 0.4rem; }
+.citas-textarea, .citas-date {
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    padding: 0.7rem;
+    font-family: inherit;
+    font-size: 0.92rem;
+    margin-bottom: 1rem;
+    box-sizing: border-box;
+}
+.citas-textarea { min-height: 90px; resize: vertical; }
+.citas-textarea:focus, .citas-date:focus { outline: none; border-color: #2563eb; }
+.citas-submit {
+    align-self: flex-start;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 0.7rem 1.6rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.citas-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+.citas-error { color: #dc2626; font-size: 0.88rem; margin: 0 0 0.8rem; }
+.citas-ok { color: #16a34a; font-size: 0.88rem; margin: 0 0 0.8rem; }
+
+/* Lista */
+.citas-list-section h2 { font-size: 1.2rem; color: #111827; margin: 0 0 1rem; }
+.citas-loading { color: #9ca3af; }
+.citas-empty {
+    text-align: center; padding: 2rem 1rem; color: #6b7280;
+    background: #fff; border: 1px dashed #d1d5db; border-radius: 14px;
+}
+.citas-list { display: flex; flex-direction: column; gap: 0.9rem; }
+.cita-card {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 14px;
+    padding: 1.1rem 1.2rem; box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+.cita-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem; gap: 0.5rem; }
+.cita-card-head small { color: #9ca3af; font-size: 0.78rem; }
+.cita-reason { margin: 0 0 0.5rem; color: #374151; line-height: 1.5; }
+.cita-line { margin: 0.3rem 0; color: #4b5563; font-size: 0.9rem; }
+.cita-line.confirmed { color: #166534; font-weight: 600; }
+.cita-response { margin: 0.6rem 0 0; padding: 0.7rem 0.9rem; background: #f9fafb; border-radius: 8px; color: #374151; font-size: 0.9rem; }
+.cita-cancel {
+    margin-top: 0.8rem; background: transparent; border: 1px solid #fca5a5;
+    color: #dc2626; padding: 0.4rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem;
+}
+
+/* Badges de estado */
+.cita-status { font-size: 0.74rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+.st-solicitada   { background: #FEF3C7; color: #92400E; }
+.st-confirmada   { background: #DCFCE7; color: #166534; }
+.st-reprogramada { background: #DBEAFE; color: #1E40AF; }
+.st-rechazada    { background: #FEE2E2; color: #991B1B; }
+.st-cancelada    { background: #F3F4F6; color: #6B7280; }
+
+/* Tema oscuro */
+.theme-descanso .citas-header h1 { color: #fff !important; }
+.theme-descanso .citas-header p { color: #9A9AAA !important; }
+.theme-descanso .citas-form, .theme-descanso .cita-card {
+    background: #1E1E2E !important; border-color: #2C2C3E !important;
+}
+.theme-descanso .citas-label { color: #C0C0CC !important; }
+.theme-descanso .citas-textarea, .theme-descanso .citas-date {
+    background: #2A2A3C !important; border-color: #3A3A4E !important; color: #E0E0E0 !important;
+}
+.theme-descanso .citas-list-section h2 { color: #fff !important; }
+.theme-descanso .citas-empty { background: #1E1E2E !important; border-color: #3A3A4E !important; color: #9A9AAA !important; }
+.theme-descanso .cita-reason, .theme-descanso .cita-line { color: #C0C0CC !important; }
+.theme-descanso .cita-response { background: #2A2A3C !important; color: #C0C0CC !important; }
+.theme-descanso .cita-card-head small { color: #9A9AAA !important; }

@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { AuthRequest } from '../types';
 import { PsychologistFacade } from '../utils/PsychologistFacade';
+import { listRequests, respondRequest } from '../services/appointmentRequest.service';
 
 // ── Panel psicólogo ───────────────────────────────────────────
 
@@ -115,6 +116,35 @@ export const replyAppointment = async (req: AuthRequest, res: Response): Promise
       student_notes
     );
     res.status(200).json({ appointment });
+  } catch (err: any) {
+    res.status(err.status || 500).json({ message: err.message });
+  }
+};
+
+// ── Solicitudes de cita (iniciadas por el estudiante) ──────────
+export const appointmentRequests = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const requests = await listRequests();
+    res.status(200).json({ requests });
+  } catch (err: any) {
+    res.status(err.status || 500).json({ message: err.message });
+  }
+};
+
+export const respondAppointmentRequest = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { status, response_note, confirmed_date } = req.body;
+    const valid = ['confirmada', 'reprogramada', 'rechazada'];
+    if (!valid.includes(status)) {
+      res.status(400).json({ message: 'Estado inválido.' });
+      return;
+    }
+    const request = await respondRequest(req.params.id, req.user.id, status, response_note, confirmed_date);
+    if (!request) {
+      res.status(404).json({ message: 'Solicitud no encontrada.' });
+      return;
+    }
+    res.status(200).json({ request });
   } catch (err: any) {
     res.status(err.status || 500).json({ message: err.message });
   }

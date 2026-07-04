@@ -12,6 +12,9 @@ import psychologistRoutes from './routes/psychologist.routes';
 import psychologistRegisterRoutes from './routes/psychologist-register.routes';
 import appointmentRoutes from './routes/appointment.routes';
 import moodRoutes from './routes/mood.routes';          
+import followupRoutes from './routes/followup.routes';  
+import appointmentRequestRoutes from './routes/appointmentRequest.routes';
+
 const app = express();
 
 // ── Seguridad y parseo ────────────────────────────────────────
@@ -41,8 +44,8 @@ app.use('/api/psychologist', psychologistRoutes);
 app.use('/api/psychologist-register', psychologistRegisterRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/mood', moodRoutes);                       
-
-
+app.use('/api/followups', followupRoutes);
+app.use('/api/appointment-requests', appointmentRequestRoutes);
 
 // ── 404 ───────────────────────────────────────────────────────
 app.use((_req: Request, res: Response) => {
