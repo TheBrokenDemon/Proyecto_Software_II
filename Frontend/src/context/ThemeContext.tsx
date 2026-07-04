@@ -17,23 +17,28 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     (localStorage.getItem('theme') as Theme) || 'institucional'
   );
 
+  // Aplica el tema al <body> SOLO si hay sesión iniciada.
+  // Si no hay usuario (login, registro, recuperar/restablecer),
+  // se quitan todas las clases de tema para no "contaminar" esas pantallas.
   useEffect(() => {
     document.body.classList.remove('theme-institucional', 'theme-naturaleza', 'theme-descanso');
-    document.body.classList.add(`theme-${theme}`);
-  }, [theme]);
+    if (user) {
+      document.body.classList.add(`theme-${theme}`);
+    }
+  }, [theme, user]);
 
+  // Al iniciar sesión, carga el tema guardado del usuario
   useEffect(() => {
     if (user) {
       const savedTheme = (localStorage.getItem('theme') as Theme) || 'institucional';
       setTheme(savedTheme);
-      document.body.classList.add(`theme-${savedTheme}`);
     }
   }, [user]);
 
   const changeTheme = async (newTheme: Theme) => {
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
-    document.body.classList.add(`theme-${newTheme}`);
+    // La clase la aplica el useEffect de arriba (solo si hay sesión)
     await updateTheme(newTheme);
   };
 

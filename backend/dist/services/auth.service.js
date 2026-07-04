@@ -103,8 +103,8 @@ const requestPasswordReset = async (email) => {
     const user = rows[0];
     await db_1.pool.query('UPDATE password_reset_tokens SET used = TRUE WHERE user_id = $1 AND used = FALSE', [user.id]);
     const token = crypto_1.default.randomBytes(32).toString('hex');
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
-    await db_1.pool.query('INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)', [user.id, token, expiresAt]);
+    await db_1.pool.query(`INSERT INTO password_reset_tokens (user_id, token, expires_at)
+    VALUES ($1, $2, NOW() + INTERVAL '1 hour')`, [user.id, token]);
     await (0, mailer_1.sendPasswordResetEmail)(user.email, token);
 };
 exports.requestPasswordReset = requestPasswordReset;

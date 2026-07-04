@@ -11,6 +11,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Recovery from './pages/Recovery';
 import ProfessionalAccess from './pages/ProfessionalAccess';
+import ResetPassword from './pages/ResetPassword'; 
+
 
 // Páginas protegidas — estudiante
 import Dashboard from './pages/Dashboard';
@@ -36,7 +38,7 @@ export default function App() {
             <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
             <Route path="/recovery" element={<PublicRoute><Recovery /></PublicRoute>} />
             <Route path="/professional-access" element={<PublicRoute><ProfessionalAccess /></PublicRoute>} />
-
+            <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} /> 
             {/* ── Rutas protegidas con Header ─────────────── */}
             <Route element={<Layout />}>
                 {/* Estudiante */}

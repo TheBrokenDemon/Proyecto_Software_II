@@ -128,11 +128,11 @@ export const requestPasswordReset = async (email: string): Promise<void> => {
   );
 
   const token = crypto.randomBytes(32).toString('hex');
-  const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
   await pool.query(
-    'INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
-    [user.id, token, expiresAt]
+    `INSERT INTO password_reset_tokens (user_id, token, expires_at)
+    VALUES ($1, $2, NOW() + INTERVAL '1 hour')`,
+    [user.id, token]
   );
 
   await sendPasswordResetEmail(user.email, token);

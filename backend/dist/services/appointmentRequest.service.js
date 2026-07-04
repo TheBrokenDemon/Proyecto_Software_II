@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.respondRequest = exports.listRequests = exports.cancelRequest = exports.getMyRequests = exports.createRequest = void 0;
+exports.listRequests = exports.respondRequest = exports.cancelRequest = exports.getMyRequests = exports.createRequest = void 0;
 const db_1 = require("../config/db");
 // ════════════════════════════════════════════════════════════════
 // Solicitudes de cita (el estudiante solicita, el psicólogo responde)
@@ -16,7 +16,12 @@ const FIELDS = `
 const createRequest = async (studentId, reason, preferredDate) => {
     const { rows } = await db_1.pool.query(`INSERT INTO appointment_requests (student_id, reason, preferred_date)
        VALUES ($1, $2, $3)
-     RETURNING ${FIELDS}`, [studentId, reason, preferredDate ?? null]);
+     RETURNING
+       id, reason,
+       TO_CHAR(preferred_date, 'YYYY-MM-DD') AS preferred_date,
+       status, response_note,
+       TO_CHAR(confirmed_date, 'YYYY-MM-DD') AS confirmed_date,
+       created_at`, [studentId, reason, preferredDate ?? null]);
     return rows[0];
 };
 exports.createRequest = createRequest;
@@ -35,10 +40,32 @@ const cancelRequest = async (requestId, studentId) => {
     const { rows } = await db_1.pool.query(`UPDATE appointment_requests
         SET status = 'cancelada'
       WHERE id = $1 AND student_id = $2 AND status = 'solicitada'
-      RETURNING ${FIELDS}`, [requestId, studentId]);
+      RETURNING
+        id, reason,
+        TO_CHAR(preferred_date, 'YYYY-MM-DD') AS preferred_date,
+        status, response_note,
+        TO_CHAR(confirmed_date, 'YYYY-MM-DD') AS confirmed_date,
+        created_at`, [requestId, studentId]);
     return rows[0] ?? null;
 };
 exports.cancelRequest = cancelRequest;
+// Psicólogo responde: confirmar / reprogramar / rechazar
+const respondRequest = async (requestId, psychologistId, status, responseNote, confirmedDate) => {
+    const { rows } = await db_1.pool.query(`UPDATE appointment_requests
+        SET status = $1,
+            response_note = $2,
+            confirmed_date = $3,
+            psychologist_id = $4
+      WHERE id = $5
+      RETURNING
+        id, reason,
+        TO_CHAR(preferred_date, 'YYYY-MM-DD') AS preferred_date,
+        status, response_note,
+        TO_CHAR(confirmed_date, 'YYYY-MM-DD') AS confirmed_date,
+        created_at`, [status, responseNote ?? null, confirmedDate ?? null, psychologistId, requestId]);
+    return rows[0] ?? null;
+};
+exports.respondRequest = respondRequest;
 // Psicólogo: lista todas las solicitudes (las 'solicitada' primero)
 const listRequests = async () => {
     const { rows } = await db_1.pool.query(`SELECT ${FIELDS},
@@ -50,15 +77,3 @@ const listRequests = async () => {
     return rows;
 };
 exports.listRequests = listRequests;
-// Psicólogo responde: confirmar / reprogramar / rechazar
-const respondRequest = async (requestId, psychologistId, status, responseNote, confirmedDate) => {
-    const { rows } = await db_1.pool.query(`UPDATE appointment_requests
-        SET status = $1,
-            response_note = $2,
-            confirmed_date = $3,
-            psychologist_id = $4
-      WHERE id = $5
-      RETURNING ${FIELDS}`, [status, responseNote ?? null, confirmedDate ?? null, psychologistId, requestId]);
-    return rows[0] ?? null;
-};
-exports.respondRequest = respondRequest;
