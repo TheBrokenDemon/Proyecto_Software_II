@@ -26,12 +26,15 @@ const getStudentsList = async () => {
          SELECT u.id, u.full_name, u.email, u.age, u.gender, u.created_at,
                 COUNT(er.id)::int    AS total_evaluations,
                 MAX(er.completed_at) AS last_evaluation,
-                r.avg_score
+                r.avg_score,
+                u.assigned_psychologist_id,
+                p.full_name AS assigned_psychologist_name
            FROM users u
            LEFT JOIN evaluation_responses er ON er.user_id = u.id
            LEFT JOIN risk r ON r.user_id = u.id
+           LEFT JOIN users p ON p.id = u.assigned_psychologist_id
           WHERE u.role = 'estudiante'
-          GROUP BY u.id, r.avg_score
+          GROUP BY u.id, r.avg_score, p.full_name
           ORDER BY u.full_name ASC`);
     // Mapea el promedio a un nivel de riesgo (mismo criterio que la R2)
     return rows.map((row) => {
@@ -50,8 +53,23 @@ const getStudentsList = async () => {
     });
 };
 exports.getStudentsList = getStudentsList;
-const getStudentResponses = async (studentId) => {
-    const { rows: userRows } = await db_1.pool.query('SELECT id, full_name, email, age, gender FROM users WHERE id = $1 AND role = $2', [studentId, 'estudiante']);
+const getStudentResponses = async (studentId, requestingPsychId) => {
+    // Confidencialidad: si el alumno está asignado a OTRO psicólogo, no hay acceso
+    if (requestingPsychId) {
+        const { rows: aRows } = await db_1.pool.query('SELECT assigned_psychologist_id FROM users WHERE id = $1', [studentId]);
+        const assigned = aRows[0]?.assigned_psychologist_id;
+        if (assigned && assigned !== requestingPsychId) {
+            const err = new Error('No tienes acceso a la información de este estudiante (asignado a otro psicólogo).');
+            err.status = 403;
+            throw err;
+        }
+    }
+    const { rows: userRows } = await db_1.pool.query(`SELECT u.id, u.full_name, u.email, u.age, u.gender,
+                u.assigned_psychologist_id,
+                p.full_name AS assigned_psychologist_name
+           FROM users u
+           LEFT JOIN users p ON p.id = u.assigned_psychologist_id
+          WHERE u.id = $1 AND u.role = $2`, [studentId, 'estudiante']);
     if (userRows.length === 0) {
         const err = new Error('Estudiante no encontrado.');
         err.status = 404;
@@ -104,6 +122,15 @@ const createFollowup = async (studentId, psychologistId, notes) => {
     if (studentRows.length === 0) {
         const err = new Error('Estudiante no encontrado.');
         err.status = 404;
+        throw err;
+    }
+    // Regla de exclusividad: si el estudiante ya está asignado a OTRO psicólogo,
+    // este solo puede verlo, no atenderlo (dejar notas).
+    const { rows: aRows } = await db_1.pool.query('SELECT assigned_psychologist_id FROM users WHERE id = $1', [studentId]);
+    const assigned = aRows[0]?.assigned_psychologist_id;
+    if (assigned && assigned !== psychologistId) {
+        const err = new Error('Este estudiante está asignado a otro psicólogo. Solo puedes verlo.');
+        err.status = 403;
         throw err;
     }
     const { rows } = await db_1.pool.query(`INSERT INTO psychological_followups (student_id, psychologist_id, notes)

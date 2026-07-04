@@ -12,6 +12,7 @@ interface Req {
     created_at: string;
     student_name: string;
     student_email: string;
+    psychologist_name?: string | null;
 }
 
 const STATUS: Record<string, { label: string; cls: string }> = {
@@ -59,7 +60,7 @@ export default function AppointmentRequests() {
                     confirmed_date: date || null,
                 }),
             });
-            if (!res.ok) throw new Error('No se pudo actualizar la solicitud.');
+            if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.message || 'No se pudo actualizar la solicitud.'); }
             setActiveId(null);
             setNote('');
             setDate('');
@@ -110,7 +111,10 @@ export default function AppointmentRequests() {
                             <p className="ar-reason">{r.reason}</p>
                             {r.preferred_date && <p className="ar-line">📅 Fecha tentativa del estudiante: {fmt(r.preferred_date)}</p>}
                             {r.confirmed_date && <p className="ar-line ok">✅ Fecha propuesta: {fmt(r.confirmed_date)}</p>}
-                            {r.response_note && <p className="ar-line"><strong>Tu respuesta:</strong> {r.response_note}</p>}
+                            {r.response_note && <p className="ar-line"><strong>Respuesta:</strong> {r.response_note}</p>}
+                            {r.status !== 'solicitada' && r.psychologist_name && (
+                                <p className="ar-answered-by">Respondida por <strong>{r.psychologist_name}</strong></p>
+                            )}
 
                             {r.status === 'solicitada' && (
                                 <>

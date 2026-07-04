@@ -44,3 +44,5 @@
 .ar-btn.confirm { background: #16a34a; }
 .ar-btn.reschedule { background: #2563eb; }
 .ar-btn.reject { background: #dc2626; }
+
+.ar-answered-by { margin: 0.4rem 0 0; font-size: 0.82rem; color: var(--ps-muted); font-style: italic; }

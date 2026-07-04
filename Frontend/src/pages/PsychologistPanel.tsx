@@ -15,6 +15,8 @@ interface Student {
     total_evaluations: number;
     last_evaluation: string | null;
     risk_level?: 'alto' | 'medio' | 'bajo' | 'sin_datos';
+    assigned_psychologist_id?: string | null;
+    assigned_psychologist_name?: string | null;
 }
 
 const RISK = {
@@ -49,7 +51,7 @@ const MOODS: Record<number, { emoji: string; label: string }> = {
     4: { emoji: '😄', label: 'Bien' },
 };
 
-type View = 'list' | 'detail' | 'requests';
+type View = 'list' | 'detail' | 'requests' | 'patients';
 
 const formatDate = (d: string | null) =>
     d ? new Date(d).toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
@@ -63,7 +65,7 @@ const api = {
     },
     getStudentDetail: async (id: string) => {
         const res = await fetch(`${API_URL}/psychologist/students/${id}`, { headers: authHeaders() });
-        if (!res.ok) throw new Error('No se pudo cargar el detalle del estudiante.');
+        if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.message || 'No se pudo cargar el detalle del estudiante.'); }
         return res.json();
     },
     sendCitation: async (studentId: string) => {
@@ -80,7 +82,7 @@ const api = {
             headers: authHeaders(),
             body: JSON.stringify({ notes }),
         });
-        if (!res.ok) throw new Error('No se pudo guardar la nota.');
+        if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.message || 'No se pudo guardar la nota.'); }
         return res.json();
     },
 };
@@ -169,6 +171,34 @@ export default function PsychologistPanel() {
         s.email.toLowerCase().includes(search.toLowerCase())
     );
     const totalEvals = students.reduce((sum, s) => sum + s.total_evaluations, 0);
+    const myLoad = students.filter(s => s.assigned_psychologist_id === user?.id).length;
+    const detailAssigned = detail?.student.assigned_psychologist_id;
+    const detailIsMine = !detailAssigned || detailAssigned === user?.id;
+
+    const renderStudentRow = (s: Student) => (
+        <div key={s.id} className={`psych-student-row risk-${s.risk_level || 'sin_datos'}`} onClick={() => openStudent(s)}>
+            <div className="psych-student-avatar">{s.full_name.charAt(0).toUpperCase()}</div>
+            <div className="psych-student-info">
+                <strong>{s.full_name}</strong>
+                <span>{s.email}</span>
+            </div>
+            <div className="psych-student-meta">
+                <span className="psych-risk-dot" style={{ background: RISK[s.risk_level || 'sin_datos'].color }} title={RISK[s.risk_level || 'sin_datos'].label} />
+                <span className="psych-risk-label" style={{ color: RISK[s.risk_level || 'sin_datos'].color }}>{RISK[s.risk_level || 'sin_datos'].label}</span>
+                {s.assigned_psychologist_id
+                    ? (s.assigned_psychologist_id === user?.id
+                        ? <span className="psych-assign-badge mine">Tu paciente</span>
+                        : <span className="psych-assign-badge other">🔒 {s.assigned_psychologist_name}</span>)
+                    : <span className="psych-assign-badge free">Sin asignar</span>}
+                <span className="psych-badge eval">{s.total_evaluations} evaluaciones</span>
+            </div>
+            <div className="psych-student-date">
+                <small>Última eval.</small>
+                <span>{formatDate(s.last_evaluation)}</span>
+            </div>
+            <span className="psych-row-arrow">›</span>
+        </div>
+    );
 
     const isCritical = (responses: EvalResponse[]): boolean => {
         if (responses.length === 0) return false;
@@ -205,6 +235,12 @@ export default function PsychologistPanel() {
                         onClick={() => { setView('requests'); setDetail(null); }}
                     >
                         <span>📅</span> Solicitudes
+                    </button>
+                    <button
+                        className={`psych-nav-item ${view === 'patients' ? 'active' : ''}`}
+                        onClick={() => { setView('patients'); setDetail(null); }}
+                    >
+                        <span>💚</span> Mis pacientes
                     </button>
                     {detail && (
                         <button className={`psych-nav-item ${view === 'detail' ? 'active' : ''}`}>
@@ -250,6 +286,11 @@ export default function PsychologistPanel() {
                                 <span className="psych-stat-value">{totalEvals}</span>
                                 <span className="psych-stat-label">Evaluaciones totales</span>
                             </div>
+                            <div className="psych-stat-card">
+                                <span className="psych-stat-icon">🧑‍⚕️</span>
+                                <span className="psych-stat-value">{myLoad}/6</span>
+                                <span className="psych-stat-label">Mis estudiantes</span>
+                            </div>
                         </div>
 
                         <div className="psych-search-bar">
@@ -275,31 +316,7 @@ export default function PsychologistPanel() {
                             </div>
                         ) : (
                             <div className="psych-student-list">
-                                {filtered.map(s => (
-                                    <div key={s.id} className={`psych-student-row risk-${s.risk_level || 'sin_datos'}`} onClick={() => openStudent(s)}>
-                                        <div className="psych-student-avatar">{s.full_name.charAt(0).toUpperCase()}</div>
-                                        <div className="psych-student-info">
-                                            <strong>{s.full_name}</strong>
-                                            <span>{s.email}</span>
-                                        </div>
-                                        <div className="psych-student-meta">
-                                            <span
-                                                className="psych-risk-dot"
-                                                style={{ background: RISK[s.risk_level || 'sin_datos'].color }}
-                                                title={RISK[s.risk_level || 'sin_datos'].label}
-                                            />
-                                            <span className="psych-risk-label" style={{ color: RISK[s.risk_level || 'sin_datos'].color }}>
-                                                {RISK[s.risk_level || 'sin_datos'].label}
-                                            </span>
-                                            <span className="psych-badge eval">{s.total_evaluations} evaluaciones</span>
-                                        </div>
-                                        <div className="psych-student-date">
-                                            <small>Última eval.</small>
-                                            <span>{formatDate(s.last_evaluation)}</span>
-                                        </div>
-                                        <span className="psych-row-arrow">›</span>
-                                    </div>
-                                ))}
+                                {filtered.map(renderStudentRow)}
                             </div>
                         )}
                     </>
@@ -307,6 +324,27 @@ export default function PsychologistPanel() {
 
                 {/* VISTA: SOLICITUDES DE CITA */}
                 {view === 'requests' && <AppointmentRequests />}
+
+                {/* VISTA: MIS PACIENTES */}
+                {view === 'patients' && (
+                    <>
+                        <header className="psych-header">
+                            <div>
+                                <h1>Mis pacientes</h1>
+                                <p>Estudiantes asignados a ti ({myLoad}/6)</p>
+                            </div>
+                            <button className="psych-refresh-btn" onClick={loadStudents}>↻ Actualizar</button>
+                        </header>
+                        {(() => {
+                            const mine = students.filter(s => s.assigned_psychologist_id === user?.id);
+                            return mine.length === 0 ? (
+                                <div className="psych-empty"><p>Aún no tienes pacientes asignados. Se asignan al confirmar una cita.</p></div>
+                            ) : (
+                                <div className="psych-student-list">{mine.map(renderStudentRow)}</div>
+                            );
+                        })()}
+                    </>
+                )}
 
                 {/* VISTA: DETALLE */}
                 {view === 'detail' && detail && (
@@ -334,7 +372,13 @@ export default function PsychologistPanel() {
                             </div>
                         </div>
 
-                        {isCritical(detail.responses) && (
+                        {!detailIsMine && (
+                            <div className="psych-readonly-banner">
+                                🔒 Este estudiante está asignado a <strong>{detail.student.assigned_psychologist_name}</strong>. Solo puedes verlo.
+                            </div>
+                        )}
+
+                        {detailIsMine && isCritical(detail.responses) && (
                             <div className="psych-critical-alert">
                                 <div>
                                     <strong>⚠️ Nivel crítico detectado</strong>
@@ -356,6 +400,7 @@ export default function PsychologistPanel() {
 
                         <section className="psych-section">
                             <h3 className="psych-section-title">📝 Notas y recomendaciones</h3>
+                            {detailIsMine && (
                             <div className="psych-note-form">
                                 <textarea
                                     className="psych-note-input"
@@ -372,6 +417,7 @@ export default function PsychologistPanel() {
                                     {savingNote ? 'Guardando...' : 'Guardar nota'}
                                 </button>
                             </div>
+                            )}
                             {!detail.followups || detail.followups.length === 0 ? (
                                 <div className="psych-empty-sm">Aún no has registrado notas para este estudiante.</div>
                             ) : (

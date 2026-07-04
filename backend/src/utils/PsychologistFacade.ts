@@ -15,7 +15,7 @@ import {
 export class PsychologistFacade {
   // Estudiantes
   static getStudents()                          { return getStudentsList(); }
-  static getStudentDetail(id: string)           { return getStudentResponses(id); }
+  static getStudentDetail(id: string, psychId?: string) { return getStudentResponses(id, psychId); }
   static sendCitation(studentId: string, psychId: string) { return sendCitationEmail(studentId, psychId); }
 
   // Seguimiento

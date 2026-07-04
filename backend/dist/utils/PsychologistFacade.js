@@ -7,7 +7,7 @@ const psychologist_service_1 = require("../services/psychologist.service");
 class PsychologistFacade {
     // Estudiantes
     static getStudents() { return (0, psychologist_service_1.getStudentsList)(); }
-    static getStudentDetail(id) { return (0, psychologist_service_1.getStudentResponses)(id); }
+    static getStudentDetail(id, psychId) { return (0, psychologist_service_1.getStudentResponses)(id, psychId); }
     static sendCitation(studentId, psychId) { return (0, psychologist_service_1.sendCitationEmail)(studentId, psychId); }
     // Seguimiento
     static openFollowup(studentId, psychId, notes) {

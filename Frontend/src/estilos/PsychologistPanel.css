@@ -614,3 +614,31 @@
   background: var(--ps-accent-light);
   color: var(--ps-accent-deep);
 }
+
+/* ── Asignación de estudiantes ── */
+.psych-assign-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.psych-assign-badge.mine  { background: #DCFCE7; color: #166534; }
+.psych-assign-badge.other { background: #F3F4F6; color: #6B7280; }
+.psych-assign-badge.free  { background: #EFF6FF; color: #1E40AF; }
+
+.psych-readonly-banner {
+  background: #F3F4F6;
+  border: 1px solid #d1d5db;
+  color: #4b5563;
+  border-radius: 10px;
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 1.2rem;
+  font-size: 0.92rem;
+}
+
+/* Tema oscuro */
+.theme-descanso .psych-assign-badge.mine  { background: #14532D !important; color: #BBF7D0 !important; }
+.theme-descanso .psych-assign-badge.other { background: #2A2A3C !important; color: #B0B0C0 !important; }
+.theme-descanso .psych-assign-badge.free  { background: #1E3A5F !important; color: #93C5FD !important; }
+.theme-descanso .psych-readonly-banner { background: #2A2A3C !important; border-color: #3A3A4E !important; color: #C0C0CC !important; }

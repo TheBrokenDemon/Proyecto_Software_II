@@ -17,7 +17,7 @@ const listStudents = async (_req, res) => {
 exports.listStudents = listStudents;
 const studentResponses = async (req, res) => {
     try {
-        const data = await PsychologistFacade_1.PsychologistFacade.getStudentDetail(req.params.studentId);
+        const data = await PsychologistFacade_1.PsychologistFacade.getStudentDetail(req.params.studentId, req.user.id);
         res.status(200).json(data);
     }
     catch (err) {

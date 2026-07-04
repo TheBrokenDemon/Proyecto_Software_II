@@ -17,7 +17,7 @@ export const listStudents = async (_req: AuthRequest, res: Response): Promise<vo
 
 export const studentResponses = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const data = await PsychologistFacade.getStudentDetail(req.params.studentId);
+    const data = await PsychologistFacade.getStudentDetail(req.params.studentId, req.user.id);
     res.status(200).json(data);
   } catch (err: any) {
     res.status(err.status || 500).json({ message: err.message });
