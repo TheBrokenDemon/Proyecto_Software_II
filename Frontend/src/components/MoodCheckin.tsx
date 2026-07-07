@@ -27,6 +27,7 @@ export default function MoodCheckin() {
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [thanks, setThanks] = useState(false);
 
     const load = async () => {
         try {
@@ -55,6 +56,8 @@ export default function MoodCheckin() {
             const { checkin } = await saveMood(selected, note.trim() || undefined);
             setToday(checkin);
             setEditing(false);
+            setThanks(true);
+            setTimeout(() => setThanks(false), 4000);
             const histRes = await getMoodHistory();
             setHistory(histRes.history);
             setStreak(histRes.streak);
@@ -81,6 +84,10 @@ export default function MoodCheckin() {
             </div>
 
             {alreadyChecked ? (
+                <>
+                {thanks && (
+                    <p className="mood-thanks">💚 ¡Gracias por registrar tu ánimo! Cada día cuenta.</p>
+                )}
                 <div className="mood-done">
                     <span className="mood-done-emoji">{moodOf(today!.mood)?.emoji}</span>
                     <div className="mood-done-text">
@@ -89,6 +96,7 @@ export default function MoodCheckin() {
                     </div>
                     <button className="mood-edit-btn" onClick={() => setEditing(true)}>Editar</button>
                 </div>
+                </>
             ) : (
                 <>
                     <div className="mood-faces">

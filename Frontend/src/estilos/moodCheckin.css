@@ -138,3 +138,12 @@
 .theme-descanso .mood-history { border-color: #2C2C3E !important; }
 .theme-descanso .mood-history-label,
 .theme-descanso .mood-history-day { color: #9A9AAA !important; }
+
+/* Mensaje de agradecimiento al guardar el ánimo */
+.mood-thanks {
+    margin: 0 0 0.8rem;
+    color: #16a34a;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.theme-descanso .mood-thanks { color: #6EE7B7 !important; }
