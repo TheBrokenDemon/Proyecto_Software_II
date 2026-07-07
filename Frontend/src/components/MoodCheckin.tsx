@@ -106,6 +106,8 @@ export default function MoodCheckin() {
                                 className={`mood-face ${selected === m.value ? 'selected' : ''}`}
                                 onClick={() => setSelected(m.value)}
                                 title={m.label}
+                                aria-label={`Me siento ${m.label.toLowerCase()}`}
+                                aria-pressed={selected === m.value}
                             >
                                 <span className="mood-face-emoji">{m.emoji}</span>
                                 <span className="mood-face-label">{m.label}</span>
@@ -120,6 +122,7 @@ export default function MoodCheckin() {
                         maxLength={500}
                         onChange={(e) => setNote(e.target.value)}
                     />
+                     <span className="mood-note-counter">{note.length}/500</span>
 
                     {error && <p className="mood-error">{error}</p>}
 

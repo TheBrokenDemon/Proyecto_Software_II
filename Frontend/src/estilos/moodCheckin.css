@@ -147,3 +147,14 @@
     font-weight: 600;
 }
 .theme-descanso .mood-thanks { color: #6EE7B7 !important; }
+
+/* Contador de caracteres de la nota */
+.mood-note-counter {
+    align-self: flex-end;
+    display: block;
+    text-align: right;
+    font-size: 0.75rem;
+    color: #9ca3af;
+    margin: -0.5rem 0 0.6rem;
+}
+.theme-descanso .mood-note-counter { color: #8A8A9A !important; }
