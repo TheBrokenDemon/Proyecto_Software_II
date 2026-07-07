@@ -1,0 +1,15 @@
+# Variables de entorno (credenciales) — NUNCA subir
+.env
+**/.env
+
+# Dependencias
+node_modules/
+**/node_modules/
+
+# Builds
+dist/
+**/dist/
+
+# Logs y sistema
+*.log
+.DS_Store
