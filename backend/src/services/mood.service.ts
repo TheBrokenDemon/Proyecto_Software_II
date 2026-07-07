@@ -60,7 +60,7 @@ const localISO = (d: Date): string => {
 };
 
 // Racha de días consecutivos terminando hoy (o ayer si aún no marcó hoy)
-const computeStreak = (dates: string[]): number => {
+export const computeStreak = (dates: string[]): number => {
   const set = new Set(dates);
   const cursor = new Date();
 
