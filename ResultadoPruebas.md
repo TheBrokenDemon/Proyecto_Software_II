@@ -1,82 +1,237 @@
-> mindcheck-backend@2.0.0 test
-> jest
+import { respondRequest, MAX_STUDENTS_PER_PSYCHOLOGIST } from '../services/appointmentRequest.service';
+import { pool } from '../config/db';
 
- PASS  src/__tests__/appointmentRequest.service.test.ts
-  HU-73: respondRequest (Unidad de Caja Blanca)
-    √ P1: retorna null cuando la solicitud no existe (D1=T) (7 ms)
-    √ P2: estado 'rechazada' no dispara la lógica de asignación (D2a=F, D2b=F) (2 ms)
-    √ P3: rechaza con 409 si el estudiante ya está asignado a OTRO psicólogo (D3a=T, D3b=T) (1 ms)
-    √ P4: no reasigna ni valida cupo si el estudiante ya es del MISMO psicólogo (D3a=T, D3b=F, D4=F) (1 ms)
-    √ P5: rechaza con 409 al alcanzar el cupo máximo de 6 estudiantes (D4=T, D5=T) (1 ms)
-    √ P6 (happy path): asigna al estudiante cuando hay cupo disponible con status="confirmada" (D4=T, D5=F) (1 ms)
-    √ P7: asigna al estudiante con status='reprogramada', cubriendo el 2do operando del OR (D2a=F, D2b=T, D4=T, D5=F) (1 ms)
-    √ P8: no reasigna con status='reprogramada' cuando ya es del mismo psicólogo (D2a=F, D2b=T, D3a=T, D3b=F, D4=F)
+// Nota: este proyecto no usa el SDK @supabase/supabase-js. El acceso a datos
+// se hace mediante pool.query (pg.Pool) contra el Postgres administrado por
+// Supabase, definido en '../config/db'. Por eso mockeamos ese módulo en vez
+// de un cliente de supabase-js que no existe en el código fuente.
+jest.mock('../config/db', () => ({
+  pool: {
+    query: jest.fn(),
+  },
+}));
 
- PASS  src/__tests__/mood.controller.test.ts
-  POST /api/mood/checkins — caja negra (particiones y valores límite)
-    √ mood = 0 (límite inválido inferior) -> 400 (7 ms)
-    √ mood = 1 (límite válido inferior) -> 201
-    √ mood = 4 (límite válido superior) -> 201
-    √ mood = 5 (límite inválido superior) -> 400 (1 ms)
-    √ mood = 2.5 (no entero) -> 400 (1 ms)
-    √ mood ausente -> 400
-    √ note de 500 caracteres (límite válido) -> 201 (1 ms)
-    √ note de 501 caracteres (límite inválido) -> 400 (1 ms)
-    √ note numérica (tipo inválido) -> 400 (2 ms)
-    √ sin note (opcional) -> 201 (1 ms)
+const mockedQuery = pool.query as jest.Mock;
 
- PASS  src/__tests__/mood.streak.test.ts
-  computeStreak — caja blanca (cobertura de ramas)
-    √ R1: sin registros -> racha 0 (8 ms)
-    √ R1: sin registro hoy ni ayer (último hace 3 días) -> racha 0 (1 ms)
-    √ R3: registró solo hoy -> racha 1
-    √ R2: no registró hoy pero sí ayer -> la racha se conserva (1)
-    √ R4: hoy + ayer + antier consecutivos -> racha 3
-    √ R2+R4: sin hoy, pero ayer y antier consecutivos -> racha 2
-    √ R5: hueco corta la racha (hoy, ayer, y salto a hace 3 días) -> racha 2
-    √ R4: orden de entrada no importa (usa Set) -> racha 3
-    √ R4: fechas duplicadas no inflan la racha -> racha 2
+// Datos de ejemplo reutilizados entre pruebas
+const REQUEST_ID = 'req-789';
+const STUDENT_ID = 'student-456';
+const PSYCHOLOGIST_ID = 'psych-123';
+const OTHER_PSYCHOLOGIST_ID = 'psych-999';
 
-Test Suites: 3 passed, 3 total
-Tests:       27 passed, 27 total
-Snapshots:   0 total
-Time:        4.93 s
-Ran all test suites.
+// Fila devuelta por la actualización final de la solicitud
+const buildFinalRequestRow = (status: string) => ({
+  id: REQUEST_ID,
+  reason: 'Consulta inicial',
+  preferred_date: '2026-10-10',
+  status,
+  response_note: null,
+  confirmed_date: null,
+  created_at: '2026-07-01T00:00:00.000Z',
+});
 
-C:\Users\mhuay\OneDrive\Documentos\ProyectoFinalIngSoftware\Proyecto_Software_II\backend>npm run test:vitest
+describe('HU-73: respondRequest (Unidad de Caja Blanca)', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-> mindcheck-backend@2.0.0 test:vitest
-> vitest run
+  it('P1: retorna null cuando la solicitud no existe (D1=T)', async () => {
+    mockedQuery.mockImplementation((queryText: string) => {
+      if (queryText.includes('SELECT student_id FROM appointment_requests WHERE id = $1')) {
+        return Promise.resolve({ rows: [] });
+      }
+      return Promise.resolve({ rows: [] });
+    });
 
+    const result = await respondRequest(REQUEST_ID, PSYCHOLOGIST_ID, 'confirmada');
 
- RUN  v4.1.10 C:/Users/mhuay/OneDrive/Documentos/ProyectoFinalIngSoftware/Proyecto_Software_II/backend
+    expect(result).toBeNull();
+    // Solo debió ejecutarse la primera consulta; no debe intentar asignar ni actualizar
+    expect(mockedQuery).toHaveBeenCalledTimes(1);
+  });
 
- ✓ src/__tests__/psychologist-assignment.vitest.ts (3 tests) 75ms
-   ✓ HU-73: Asignación de Estudiantes y Confidencialidad (Integración) (3)
-     ✓ TC1: Debería asignar estudiante al confirmar cita (200 OK) 59ms
-     ✓ TC2: Debería rechazar si el psicólogo alcanzó el cupo máximo (409 Conflict) 8ms
-     ✓ TC3: Debería denegar acceso a estudiante asignado a otro (403 Forbidden) 6ms
+  it("P2: estado 'rechazada' no dispara la lógica de asignación (D2a=F, D2b=F)", async () => {
+    mockedQuery.mockImplementation((queryText: string) => {
+      if (queryText.includes('SELECT student_id FROM appointment_requests WHERE id = $1')) {
+        return Promise.resolve({ rows: [{ student_id: STUDENT_ID }] });
+      }
+      if (queryText.includes('UPDATE appointment_requests')) {
+        return Promise.resolve({ rows: [buildFinalRequestRow('rechazada')] });
+      }
+      throw new Error(`Consulta inesperada en P2: ${queryText}`);
+    });
 
- Test Files  1 passed (1)
-      Tests  3 passed (3)
-   Start at  20:26:33
-   Duration  1.56s (transform 376ms, setup 0ms, import 1.13s, tests 75ms, environment 0ms)
+    const result = await respondRequest(REQUEST_ID, PSYCHOLOGIST_ID, 'rechazada');
 
+    expect(result?.status).toBe('rechazada');
+    // Nunca debió consultar assigned_psychologist_id ni el cupo
+    expect(mockedQuery).not.toHaveBeenCalledWith(
+      expect.stringContaining('SELECT assigned_psychologist_id'),
+      expect.anything()
+    );
+  });
 
-C:\Users\mhuay\OneDrive\Documentos\ProyectoFinalIngSoftware\Proyecto_Software_II\backend>npx jest src/__tests__/appointmentRequest.service.test.ts
- PASS  src/__tests__/appointmentRequest.service.test.ts
-  HU-73: respondRequest (Unidad de Caja Blanca)
-    √ P1: retorna null cuando la solicitud no existe (D1=T) (4 ms)
-    √ P2: estado 'rechazada' no dispara la lógica de asignación (D2a=F, D2b=F) (2 ms)
-    √ P3: rechaza con 409 si el estudiante ya está asignado a OTRO psicólogo (D3a=T, D3b=T) (2 ms)
-    √ P4: no reasigna ni valida cupo si el estudiante ya es del MISMO psicólogo (D3a=T, D3b=F, D4=F) (2 ms)
-    √ P5: rechaza con 409 al alcanzar el cupo máximo de 6 estudiantes (D4=T, D5=T) (2 ms)
-    √ P6 (happy path): asigna al estudiante cuando hay cupo disponible con status="confirmada" (D4=T, D5=F) (1 ms)
-    √ P7: asigna al estudiante con status='reprogramada', cubriendo el 2do operando del OR (D2a=F, D2b=T, D4=T, D5=F) (1 ms)
-    √ P8: no reasigna con status='reprogramada' cuando ya es del mismo psicólogo (D2a=F, D2b=T, D3a=T, D3b=F, D4=F) (1 ms)
+  it("P3: rechaza con 409 si el estudiante ya está asignado a OTRO psicólogo (D3a=T, D3b=T)", async () => {
+    mockedQuery.mockImplementation((queryText: string) => {
+      if (queryText.includes('SELECT student_id FROM appointment_requests WHERE id = $1')) {
+        return Promise.resolve({ rows: [{ student_id: STUDENT_ID }] });
+      }
+      if (queryText.includes('SELECT assigned_psychologist_id FROM users WHERE id = $1')) {
+        return Promise.resolve({ rows: [{ assigned_psychologist_id: OTHER_PSYCHOLOGIST_ID }] });
+      }
+      throw new Error(`Consulta inesperada en P3: ${queryText}`);
+    });
 
-Test Suites: 1 passed, 1 total
-Tests:       8 passed, 8 total
-Snapshots:   0 total
-Time:        2.274 s, estimated 4 s
-Ran all test suites matching src/__tests__/appointmentRequest.service.test.ts.
+    expect.assertions(3);
+    try {
+      await respondRequest(REQUEST_ID, PSYCHOLOGIST_ID, 'confirmada');
+    } catch (err: any) {
+      expect(err.status).toBe(409);
+      expect(err.message).toContain('asignado a otro psicólogo');
+    }
+    // No debió intentar validar cupo ni actualizar la solicitud
+    expect(mockedQuery).not.toHaveBeenCalledWith(
+      expect.stringContaining('COUNT(*)'),
+      expect.anything()
+    );
+  });
+
+  it('P4: no reasigna ni valida cupo si el estudiante ya es del MISMO psicólogo (D3a=T, D3b=F, D4=F)', async () => {
+    mockedQuery.mockImplementation((queryText: string) => {
+      if (queryText.includes('SELECT student_id FROM appointment_requests WHERE id = $1')) {
+        return Promise.resolve({ rows: [{ student_id: STUDENT_ID }] });
+      }
+      if (queryText.includes('SELECT assigned_psychologist_id FROM users WHERE id = $1')) {
+        return Promise.resolve({ rows: [{ assigned_psychologist_id: PSYCHOLOGIST_ID }] });
+      }
+      if (queryText.includes('UPDATE appointment_requests')) {
+        return Promise.resolve({ rows: [buildFinalRequestRow('confirmada')] });
+      }
+      throw new Error(`Consulta inesperada en P4: ${queryText}`);
+    });
+
+    const result = await respondRequest(REQUEST_ID, PSYCHOLOGIST_ID, 'confirmada');
+
+    expect(result?.status).toBe('confirmada');
+    expect(mockedQuery).not.toHaveBeenCalledWith(
+      expect.stringContaining('COUNT(*)'),
+      expect.anything()
+    );
+    expect(mockedQuery).not.toHaveBeenCalledWith(
+      expect.stringContaining('UPDATE users SET assigned_psychologist_id'),
+      expect.anything()
+    );
+  });
+
+  it('P5: rechaza con 409 al alcanzar el cupo máximo de 6 estudiantes (D4=T, D5=T)', async () => {
+    mockedQuery.mockImplementation((queryText: string) => {
+      if (queryText.includes('SELECT student_id FROM appointment_requests WHERE id = $1')) {
+        return Promise.resolve({ rows: [{ student_id: STUDENT_ID }] });
+      }
+      if (queryText.includes('SELECT assigned_psychologist_id FROM users WHERE id = $1')) {
+        return Promise.resolve({ rows: [{ assigned_psychologist_id: null }] });
+      }
+      if (queryText.includes('SELECT COUNT(*)::int AS total FROM users WHERE assigned_psychologist_id = $1')) {
+        return Promise.resolve({ rows: [{ total: MAX_STUDENTS_PER_PSYCHOLOGIST }] });
+      }
+      throw new Error(`Consulta inesperada en P5: ${queryText}`);
+    });
+
+    expect.assertions(3);
+    try {
+      await respondRequest(REQUEST_ID, PSYCHOLOGIST_ID, 'confirmada');
+    } catch (err: any) {
+      expect(err.status).toBe(409);
+      expect(err.message).toContain('cupo máximo');
+    }
+    expect(mockedQuery).not.toHaveBeenCalledWith(
+      expect.stringContaining('UPDATE users SET assigned_psychologist_id'),
+      expect.anything()
+    );
+  });
+
+  it('P6 (happy path): asigna al estudiante cuando hay cupo disponible con status="confirmada" (D4=T, D5=F)', async () => {
+    mockedQuery.mockImplementation((queryText: string, values: any[]) => {
+      if (queryText.includes('SELECT student_id FROM appointment_requests WHERE id = $1')) {
+        return Promise.resolve({ rows: [{ student_id: STUDENT_ID }] });
+      }
+      if (queryText.includes('SELECT assigned_psychologist_id FROM users WHERE id = $1')) {
+        return Promise.resolve({ rows: [{ assigned_psychologist_id: null }] });
+      }
+      if (queryText.includes('SELECT COUNT(*)::int AS total FROM users WHERE assigned_psychologist_id = $1')) {
+        return Promise.resolve({ rows: [{ total: 3 }] });
+      }
+      if (queryText.includes('UPDATE users SET assigned_psychologist_id = $1 WHERE id = $2')) {
+        return Promise.resolve({ rowCount: 1, rows: [] });
+      }
+      if (queryText.includes('UPDATE appointment_requests')) {
+        return Promise.resolve({ rows: [buildFinalRequestRow('confirmada')] });
+      }
+      throw new Error(`Consulta inesperada en P6: ${queryText}`);
+    });
+
+    const result = await respondRequest(REQUEST_ID, PSYCHOLOGIST_ID, 'confirmada');
+
+    expect(result?.status).toBe('confirmada');
+    expect(mockedQuery).toHaveBeenCalledWith(
+      expect.stringContaining('UPDATE users SET assigned_psychologist_id = $1 WHERE id = $2'),
+      [PSYCHOLOGIST_ID, STUDENT_ID]
+    );
+  });
+
+  it("P7: asigna al estudiante con status='reprogramada', cubriendo el 2do operando del OR (D2a=F, D2b=T, D4=T, D5=F)", async () => {
+    mockedQuery.mockImplementation((queryText: string) => {
+      if (queryText.includes('SELECT student_id FROM appointment_requests WHERE id = $1')) {
+        return Promise.resolve({ rows: [{ student_id: STUDENT_ID }] });
+      }
+      if (queryText.includes('SELECT assigned_psychologist_id FROM users WHERE id = $1')) {
+        return Promise.resolve({ rows: [{ assigned_psychologist_id: null }] });
+      }
+      if (queryText.includes('SELECT COUNT(*)::int AS total FROM users WHERE assigned_psychologist_id = $1')) {
+        return Promise.resolve({ rows: [{ total: 0 }] });
+      }
+      if (queryText.includes('UPDATE users SET assigned_psychologist_id = $1 WHERE id = $2')) {
+        return Promise.resolve({ rowCount: 1, rows: [] });
+      }
+      if (queryText.includes('UPDATE appointment_requests')) {
+        return Promise.resolve({ rows: [buildFinalRequestRow('reprogramada')] });
+      }
+      throw new Error(`Consulta inesperada en P7: ${queryText}`);
+    });
+
+    const result = await respondRequest(REQUEST_ID, PSYCHOLOGIST_ID, 'reprogramada');
+
+    expect(result?.status).toBe('reprogramada');
+    expect(mockedQuery).toHaveBeenCalledWith(
+      expect.stringContaining('UPDATE users SET assigned_psychologist_id = $1 WHERE id = $2'),
+      [PSYCHOLOGIST_ID, STUDENT_ID]
+    );
+  });
+
+  it("P8: no reasigna con status='reprogramada' cuando ya es del mismo psicólogo (D2a=F, D2b=T, D3a=T, D3b=F, D4=F)", async () => {
+    mockedQuery.mockImplementation((queryText: string) => {
+      if (queryText.includes('SELECT student_id FROM appointment_requests WHERE id = $1')) {
+        return Promise.resolve({ rows: [{ student_id: STUDENT_ID }] });
+      }
+      if (queryText.includes('SELECT assigned_psychologist_id FROM users WHERE id = $1')) {
+        return Promise.resolve({ rows: [{ assigned_psychologist_id: PSYCHOLOGIST_ID }] });
+      }
+      if (queryText.includes('UPDATE appointment_requests')) {
+        return Promise.resolve({ rows: [buildFinalRequestRow('reprogramada')] });
+      }
+      throw new Error(`Consulta inesperada en P8: ${queryText}`);
+    });
+
+    const result = await respondRequest(REQUEST_ID, PSYCHOLOGIST_ID, 'reprogramada');
+
+    expect(result?.status).toBe('reprogramada');
+    expect(mockedQuery).not.toHaveBeenCalledWith(
+      expect.stringContaining('COUNT(*)'),
+      expect.anything()
+    );
+    expect(mockedQuery).not.toHaveBeenCalledWith(
+      expect.stringContaining('UPDATE users SET assigned_psychologist_id'),
+      expect.anything()
+    );
+  });
+});
