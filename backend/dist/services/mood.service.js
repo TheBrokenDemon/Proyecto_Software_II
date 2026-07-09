@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCheckinHistory = exports.getTodayCheckin = exports.upsertTodayCheckin = void 0;
+exports.computeStreak = exports.getCheckinHistory = exports.getTodayCheckin = exports.upsertTodayCheckin = void 0;
 const db_1 = require("../config/db");
 // ════════════════════════════════════════════════════════════════
 // Check-in diario de ánimo (1 por día por estudiante)
@@ -38,7 +38,7 @@ const getCheckinHistory = async (userId, days = 14) => {
       WHERE user_id = $1
       ORDER BY checkin_date DESC
       LIMIT $2`, [userId, days]);
-    const streak = computeStreak(rows.map((r) => r.checkin_date));
+    const streak = (0, exports.computeStreak)(rows.map((r) => r.checkin_date));
     return { history: rows, streak };
 };
 exports.getCheckinHistory = getCheckinHistory;
@@ -66,3 +66,4 @@ const computeStreak = (dates) => {
     }
     return streak;
 };
+exports.computeStreak = computeStreak;
