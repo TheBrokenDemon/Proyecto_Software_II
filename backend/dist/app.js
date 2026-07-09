@@ -67,4 +67,7 @@ const start = async () => {
         console.log(`  Entorno: ${process.env.NODE_ENV || 'development'}`);
     });
 };
-start();
+if (process.env.NODE_ENV !== 'test') {
+    start();
+}
+exports.default = app;

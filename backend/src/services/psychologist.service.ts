@@ -4,6 +4,15 @@ import { AppError } from '../types';
 
 // ── Estudiantes ───────────────────────────────────────────────
 
+// Mapea el promedio (0..4) de la última evaluación a un nivel de riesgo
+export type RiskLevel = 'alto' | 'medio' | 'bajo' | 'sin_datos';
+export const riskLevelFromScore = (avg: number | null): RiskLevel => {
+    if (avg === null) return 'sin_datos';
+    if (avg < 1.34) return 'bajo';
+    if (avg < 2.67) return 'medio';
+    return 'alto';
+};
+
 export const getStudentsList = async () => {
     const { rows } = await pool.query(
         `WITH latest_response AS (
@@ -42,13 +51,8 @@ export const getStudentsList = async () => {
     // Mapea el promedio a un nivel de riesgo (mismo criterio que la R2)
     return rows.map((row: any) => {
         const avg = row.avg_score !== null ? Number(row.avg_score) : null;
-        let risk_level: 'alto' | 'medio' | 'bajo' | 'sin_datos';
-        if (avg === null) risk_level = 'sin_datos';
-        else if (avg < 1.34) risk_level = 'bajo';
-        else if (avg < 2.67) risk_level = 'medio';
-        else risk_level = 'alto';
         const { avg_score, ...rest } = row;
-        return { ...rest, risk_level };
+        return { ...rest, risk_level: riskLevelFromScore(avg) };
     });
 };
 
