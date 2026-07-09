@@ -5,6 +5,7 @@
   "main": "dist/app.js",
   "scripts": {
     "test": "jest",
+    "test:unit": "jest",
     "test:vitest": "vitest run",
     "build": "tsc",
     "start": "node dist/app.js",

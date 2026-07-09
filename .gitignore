@@ -2,6 +2,10 @@
 .env
 **/.env
 
+# Archivos .md
+.md
+**/.md
+
 # Dependencias
 node_modules/
 **/node_modules/
@@ -9,6 +13,14 @@ node_modules/
 # Builds
 dist/
 **/dist/
+
+# Reportes de cobertura de pruebas y caché de frameworks
+coverage/
+**/coverage/
+.jest-cache/
+**/.jest-cache/
+.vitest/
+**/.vitest/
 
 # Logs y sistema
 *.log
