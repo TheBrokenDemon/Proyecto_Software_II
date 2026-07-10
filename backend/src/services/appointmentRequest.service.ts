@@ -46,18 +46,36 @@ export const getMyRequests = async (studentId: string) => {
 };
 
 // Estudiante cancela una solicitud (solo si aún está 'solicitada')
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+const isValidUUID = (id: string): boolean => {
+  return typeof id === 'string' && id.trim().length > 0 && UUID_REGEX.test(id.trim());
+};
+
 export const cancelRequest = async (requestId: string, studentId: string) => {
+  // Validar UUIDs antes de ejecutar query
+  if (!isValidUUID(requestId)) {
+    const err: any = new Error('ID de solicitud inválido.');
+    err.status = 400;
+    throw err;
+  }
+  if (!isValidUUID(studentId)) {
+    const err: any = new Error('ID de estudiante inválido.');
+    err.status = 400;
+    throw err;
+  }
+  
   const { rows } = await pool.query(
     `UPDATE appointment_requests
         SET status = 'cancelada'
-      WHERE id = $1 AND student_id = $2 AND status = 'solicitada'
-      RETURNING
-       id, reason,
-       TO_CHAR(preferred_date, 'YYYY-MM-DD') AS preferred_date,
-       status, response_note,
-       TO_CHAR(confirmed_date, 'YYYY-MM-DD') AS confirmed_date,
-       created_at`,
-    [requestId, studentId]
+       WHERE id = $1 AND student_id = $2 AND status = 'solicitada'
+       RETURNING
+        id, reason,
+        TO_CHAR(preferred_date, 'YYYY-MM-DD') AS preferred_date,
+        status, response_note,
+        TO_CHAR(confirmed_date, 'YYYY-MM-DD') AS confirmed_date,
+        created_at`,
+    [requestId.trim(), studentId.trim()]
   );
   return rows[0] ?? null;
 };
@@ -89,10 +107,18 @@ export const respondRequest = async (
 ) => {
   // 1) Ubicar la solicitud y su estudiante
   const { rows: reqRows } = await pool.query(
-    'SELECT student_id FROM appointment_requests WHERE id = $1',
+    'SELECT student_id, status FROM appointment_requests WHERE id = $1',
     [requestId]
   );
   if (reqRows.length === 0) return null;
+  
+  // Validar que la solicitud esté en estado "solicitada"
+  if (reqRows[0].status !== 'solicitada') {
+    const err: any = new Error('La solicitud ya fue respondida o cancelada.');
+    err.status = 409;
+    throw err;
+  }
+  
   const studentId = reqRows[0].student_id;
 
   // 2) Si el psicólogo ATIENDE (confirma/reprograma) → asignación + cupo

@@ -139,6 +139,13 @@ export const respondAppointmentRequest = async (req: AuthRequest, res: Response)
       res.status(400).json({ message: 'Estado inválido.' });
       return;
     }
+    
+    // Validar longitud de response_note
+    if (response_note && typeof response_note === 'string' && response_note.length > 1000) {
+      res.status(400).json({ message: 'La nota de respuesta es demasiado larga (máx 1000 caracteres).' });
+      return;
+    }
+    
     const request = await respondRequest(req.params.id, req.user.id, status, response_note, confirmed_date);
     if (!request) {
       res.status(404).json({ message: 'Solicitud no encontrada.' });

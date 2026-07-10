@@ -22,7 +22,7 @@ import { respondRequest, MAX_STUDENTS_PER_PSYCHOLOGIST } from '../services/appoi
 const q = pool.query as jest.Mock;
 
 // Filas simuladas
-const reqRow = { rows: [{ student_id: 'est-1' }] };                    // la solicitud existe
+const reqRow = { rows: [{ student_id: 'est-1', status: 'solicitada' }] };                    // la solicitud existe
 const noReq = { rows: [] };                                             // no existe
 const assignedTo = (id: string | null) => ({ rows: [{ assigned_psychologist_id: id }] });
 const count = (n: number) => ({ rows: [{ total: n }] });
