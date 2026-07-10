@@ -300,13 +300,14 @@ describe('myRequests — cobertura de ramas (líneas 25-32)', () => {
   });
 });
 
-describe('respondAppointmentRequest — pruebas destructivas (bugs detectados)', () => {
+describe('respondAppointmentRequest — validación de re-respuesta (Fix 1 aplicado)', () => {
 
-  describe('Caso 1: Re-respuesta de solicitudes (bug de lógica)', () => {
+  describe('Caso 1: Bloqueo de re-respuesta de solicitudes', () => {
 
-    test('BUG: permite re-responder solicitud ya confirmada -> 200 (debería ser 400/409)', async () => {
-      const mockRequest = { id: 'req-1', status: 'rechazada' };
-      (respondRequest as jest.Mock).mockResolvedValue(mockRequest);
+    test('FIX: rechaza re-responder solicitud ya confirmada -> 409', async () => {
+      const error = new Error('La solicitud ya fue respondida o cancelada.');
+      (error as any).status = 409;
+      (respondRequest as jest.Mock).mockRejectedValue(error);
 
       const res = mockRes();
       await respondAppointmentRequest(
@@ -314,12 +315,16 @@ describe('respondAppointmentRequest — pruebas destructivas (bugs detectados)',
         res
       );
 
-      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.status).toHaveBeenCalledWith(409);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'La solicitud ya fue respondida o cancelada.' })
+      );
     });
 
-    test('BUG: permite re-responder solicitud cancelada -> 200 (debería ser 400/409)', async () => {
-      const mockRequest = { id: 'req-1', status: 'confirmada' };
-      (respondRequest as jest.Mock).mockResolvedValue(mockRequest);
+    test('FIX: rechaza re-responder solicitud cancelada -> 409', async () => {
+      const error = new Error('La solicitud ya fue respondida o cancelada.');
+      (error as any).status = 409;
+      (respondRequest as jest.Mock).mockRejectedValue(error);
 
       const res = mockRes();
       await respondAppointmentRequest(
@@ -327,12 +332,16 @@ describe('respondAppointmentRequest — pruebas destructivas (bugs detectados)',
         res
       );
 
-      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.status).toHaveBeenCalledWith(409);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'La solicitud ya fue respondida o cancelada.' })
+      );
     });
 
-    test('BUG: permite cambiar de rechazada a confirmada -> 200 (inconsistencia de estado)', async () => {
-      const mockRequest = { id: 'req-1', status: 'confirmada' };
-      (respondRequest as jest.Mock).mockResolvedValue(mockRequest);
+    test('FIX: rechaza cambiar de rechazada a confirmada -> 409', async () => {
+      const error = new Error('La solicitud ya fue respondida o cancelada.');
+      (error as any).status = 409;
+      (respondRequest as jest.Mock).mockRejectedValue(error);
 
       const res = mockRes();
       await respondAppointmentRequest(
@@ -340,16 +349,16 @@ describe('respondAppointmentRequest — pruebas destructivas (bugs detectados)',
         res
       );
 
-      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.status).toHaveBeenCalledWith(409);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'La solicitud ya fue respondida o cancelada.' })
+      );
     });
   });
 
-  describe('Caso 2: Falta límite en response_note (vulnerabilidad DoS)', () => {
+  describe('Caso 2: Validación de longitud en response_note (Fix 2 aplicado)', () => {
 
-    test('BUG: acepta response_note de 10,000 caracteres -> 200 (sin validación de longitud)', async () => {
-      const mockRequest = { id: 'req-1', status: 'rechazada' };
-      (respondRequest as jest.Mock).mockResolvedValue(mockRequest);
-
+    test('FIX: rechaza response_note de 10,000 caracteres -> 400', async () => {
       const res = mockRes();
       await respondAppointmentRequest(
         mockReqPsych({
@@ -359,20 +368,14 @@ describe('respondAppointmentRequest — pruebas destructivas (bugs detectados)',
         res
       );
 
-      expect(res.status).toHaveBeenCalledWith(200);
-      expect(respondRequest).toHaveBeenCalledWith(
-        'req-1',
-        'psych-123',
-        'rechazada',
-        'a'.repeat(10000),
-        undefined
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ message: expect.stringContaining('demasiado larga') })
       );
+      expect(respondRequest).not.toHaveBeenCalled();
     });
 
-    test('BUG: acepta response_note de 50,000 caracteres -> 200 (almacenamiento excesivo)', async () => {
-      const mockRequest = { id: 'req-1', status: 'confirmada' };
-      (respondRequest as jest.Mock).mockResolvedValue(mockRequest);
-
+    test('FIX: rechaza response_note de 50,000 caracteres -> 400', async () => {
       const res = mockRes();
       await respondAppointmentRequest(
         mockReqPsych({
@@ -382,10 +385,14 @@ describe('respondAppointmentRequest — pruebas destructivas (bugs detectados)',
         res
       );
 
-      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ message: expect.stringContaining('demasiado larga') })
+      );
+      expect(respondRequest).not.toHaveBeenCalled();
     });
 
-    test('BUG: acepta response_note con XSS potencial -> 200 (sin sanitización)', async () => {
+    test('FIX: acepta response_note de 1000 caracteres (límite válido) -> 200', async () => {
       const mockRequest = { id: 'req-1', status: 'rechazada' };
       (respondRequest as jest.Mock).mockResolvedValue(mockRequest);
 
@@ -393,19 +400,30 @@ describe('respondAppointmentRequest — pruebas destructivas (bugs detectados)',
       await respondAppointmentRequest(
         mockReqPsych({
           status: 'rechazada',
-          response_note: '<script>alert("XSS")</script>'
+          response_note: 'a'.repeat(1000)
         }, { id: 'req-1' }),
         res
       );
 
       expect(res.status).toHaveBeenCalledWith(200);
-      expect(respondRequest).toHaveBeenCalledWith(
-        'req-1',
-        'psych-123',
-        'rechazada',
-        '<script>alert("XSS")</script>',
-        undefined
+      expect(respondRequest).toHaveBeenCalled();
+    });
+
+    test('FIX: acepta response_note de 999 caracteres (debajo del límite) -> 200', async () => {
+      const mockRequest = { id: 'req-1', status: 'confirmada' };
+      (respondRequest as jest.Mock).mockResolvedValue(mockRequest);
+
+      const res = mockRes();
+      await respondAppointmentRequest(
+        mockReqPsych({
+          status: 'confirmada',
+          response_note: 'x'.repeat(999)
+        }, { id: 'req-1' }),
+        res
       );
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(respondRequest).toHaveBeenCalled();
     });
   });
 });

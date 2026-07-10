@@ -42,7 +42,7 @@ describe('cancelRequest — cobertura de ramas (líneas 49-63)', () => {
   test('R1: cancelación exitosa (solicitud propia en estado "solicitada") -> retorna fila', async () => {
     q.mockResolvedValueOnce(cancelledRow);
 
-    const result = await cancelRequest('req-1', 'user-123');
+    const result = await cancelRequest('550e8400-e29b-41d4-a716-446655440000', '550e8400-e29b-41d4-a716-446655440001');
 
     expect(result).not.toBeNull();
     expect(result).toMatchObject({
@@ -52,14 +52,14 @@ describe('cancelRequest — cobertura de ramas (líneas 49-63)', () => {
     });
     expect(q).toHaveBeenCalledWith(
       expect.stringContaining('UPDATE appointment_requests'),
-      ['req-1', 'user-123']
+      ['550e8400-e29b-41d4-a716-446655440000', '550e8400-e29b-41d4-a716-446655440001']
     );
   });
 
   test('R2: solicitud ya respondida (estado "confirmada") -> retorna null', async () => {
     q.mockResolvedValueOnce(noRows);
 
-    const result = await cancelRequest('req-1', 'user-123');
+    const result = await cancelRequest('550e8400-e29b-41d4-a716-446655440000', '550e8400-e29b-41d4-a716-446655440001');
 
     expect(result).toBeNull();
   });
@@ -67,7 +67,7 @@ describe('cancelRequest — cobertura de ramas (líneas 49-63)', () => {
   test('R2: solicitud de otro estudiante -> retorna null', async () => {
     q.mockResolvedValueOnce(noRows);
 
-    const result = await cancelRequest('req-1', 'user-OTRO');
+    const result = await cancelRequest('550e8400-e29b-41d4-a716-446655440000', '550e8400-e29b-41d4-a716-446655440002');
 
     expect(result).toBeNull();
   });
@@ -75,7 +75,7 @@ describe('cancelRequest — cobertura de ramas (líneas 49-63)', () => {
   test('R2: ID inexistente -> retorna null', async () => {
     q.mockResolvedValueOnce(noRows);
 
-    const result = await cancelRequest('no-existe', 'user-123');
+    const result = await cancelRequest('550e8400-e29b-41d4-a716-446655440099', '550e8400-e29b-41d4-a716-446655440001');
 
     expect(result).toBeNull();
   });
@@ -83,104 +83,83 @@ describe('cancelRequest — cobertura de ramas (líneas 49-63)', () => {
   test('R1: verificación de parámetros SQL (requestId y studentId)', async () => {
     q.mockResolvedValueOnce(cancelledRow);
 
-    await cancelRequest('req-789', 'student-456');
+    await cancelRequest('550e8400-e29b-41d4-a716-446655440000', '550e8400-e29b-41d4-a716-446655440001');
 
     expect(q).toHaveBeenCalledTimes(1);
     expect(q).toHaveBeenCalledWith(
       expect.stringContaining('WHERE id = $1 AND student_id = $2 AND status = \'solicitada\''),
-      ['req-789', 'student-456']
+      ['550e8400-e29b-41d4-a716-446655440000', '550e8400-e29b-41d4-a716-446655440001']
     );
   });
 });
 
-describe('cancelRequest — pruebas destructivas (casos edge)', () => {
+describe('cancelRequest — validación de UUIDs (Fix 3 aplicado)', () => {
 
-  describe('Caso 3: IDs malformados y valores edge', () => {
+  describe('Caso 3: Validación de IDs malformados', () => {
 
-    test('BUG: requestId vacío -> query ejecuta (debería validar UUID)', async () => {
-      q.mockResolvedValueOnce(noRows);
+    test('FIX: requestId vacío -> error 400 (valida UUID)', async () => {
+      await expect(cancelRequest('', '550e8400-e29b-41d4-a716-446655440000'))
+        .rejects.toMatchObject({ status: 400, message: 'ID de solicitud inválido.' });
+      expect(q).not.toHaveBeenCalled();
+    });
 
-      const result = await cancelRequest('', 'user-123');
+    test('FIX: requestId no es UUID válido -> error 400', async () => {
+      await expect(cancelRequest('no-es-uuid', '550e8400-e29b-41d4-a716-446655440000'))
+        .rejects.toMatchObject({ status: 400, message: 'ID de solicitud inválido.' });
+      expect(q).not.toHaveBeenCalled();
+    });
 
-      expect(result).toBeNull();
+    test('FIX: requestId con inyección SQL tentativa -> error 400 (no es UUID)', async () => {
+      await expect(cancelRequest("'; DROP TABLE appointment_requests;--", '550e8400-e29b-41d4-a716-446655440000'))
+        .rejects.toMatchObject({ status: 400, message: 'ID de solicitud inválido.' });
+      expect(q).not.toHaveBeenCalled();
+    });
+
+    test('FIX: studentId vacío -> error 400', async () => {
+      await expect(cancelRequest('550e8400-e29b-41d4-a716-446655440000', ''))
+        .rejects.toMatchObject({ status: 400, message: 'ID de estudiante inválido.' });
+      expect(q).not.toHaveBeenCalled();
+    });
+
+    test('FIX: ambos parámetros vacíos -> error 400 (valida requestId primero)', async () => {
+      await expect(cancelRequest('', ''))
+        .rejects.toMatchObject({ status: 400, message: 'ID de solicitud inválido.' });
+      expect(q).not.toHaveBeenCalled();
+    });
+
+    test('FIX: requestId con espacios alrededor de UUID válido -> ejecuta query con trim', async () => {
+      q.mockResolvedValueOnce(cancelledRow);
+
+      const result = await cancelRequest('  550e8400-e29b-41d4-a716-446655440000  ', '550e8400-e29b-41d4-a716-446655440001');
+
+      expect(result).not.toBeNull();
       expect(q).toHaveBeenCalledWith(
         expect.stringContaining('UPDATE appointment_requests'),
-        ['', 'user-123']
+        ['550e8400-e29b-41d4-a716-446655440000', '550e8400-e29b-41d4-a716-446655440001']
       );
     });
 
-    test('BUG: requestId no es UUID válido -> query ejecuta (debería validar formato)', async () => {
-      q.mockResolvedValueOnce(noRows);
-
-      const result = await cancelRequest('no-es-uuid', 'user-123');
-
-      expect(result).toBeNull();
-      expect(q).toHaveBeenCalled();
+    test('FIX: requestId con caracteres especiales -> error 400 (no es UUID)', async () => {
+      await expect(cancelRequest('req-1<script>alert(1)</script>', '550e8400-e29b-41d4-a716-446655440000'))
+        .rejects.toMatchObject({ status: 400, message: 'ID de solicitud inválido.' });
+      expect(q).not.toHaveBeenCalled();
     });
 
-    test('BUG: requestId con inyección SQL tentativa -> query parametrizada (seguro)', async () => {
-      q.mockResolvedValueOnce(noRows);
+    test('FIX: studentId con inyección SQL tentativa -> error 400 (no es UUID)', async () => {
+      await expect(cancelRequest('550e8400-e29b-41d4-a716-446655440000', "'; DROP TABLE users;--"))
+        .rejects.toMatchObject({ status: 400, message: 'ID de estudiante inválido.' });
+      expect(q).not.toHaveBeenCalled();
+    });
 
-      const result = await cancelRequest("'; DROP TABLE appointment_requests;--", 'user-123');
+    test('FIX: UUIDs válidos en formato correcto -> ejecuta query normalmente', async () => {
+      q.mockResolvedValueOnce(cancelledRow);
 
-      expect(result).toBeNull();
+      const result = await cancelRequest('550e8400-e29b-41d4-a716-446655440000', '550e8400-e29b-41d4-a716-446655440001');
+
+      expect(result).not.toBeNull();
       expect(q).toHaveBeenCalledWith(
         expect.stringContaining('UPDATE appointment_requests'),
-        ["'; DROP TABLE appointment_requests;--", 'user-123']
-      );
-    });
-
-    test('BUG: studentId vacío -> query ejecuta (debería validar)', async () => {
-      q.mockResolvedValueOnce(noRows);
-
-      const result = await cancelRequest('req-1', '');
-
-      expect(result).toBeNull();
-      expect(q).toHaveBeenCalledWith(
-        expect.stringContaining('UPDATE appointment_requests'),
-        ['req-1', '']
-      );
-    });
-
-    test('BUG: ambos parámetros vacíos -> query ejecuta (debería validar)', async () => {
-      q.mockResolvedValueOnce(noRows);
-
-      const result = await cancelRequest('', '');
-
-      expect(result).toBeNull();
-      expect(q).toHaveBeenCalled();
-    });
-
-    test('BUG: requestId con espacios -> query ejecuta sin trim (debería normalizar)', async () => {
-      q.mockResolvedValueOnce(noRows);
-
-      const result = await cancelRequest('  req-1  ', 'user-123');
-
-      expect(result).toBeNull();
-      expect(q).toHaveBeenCalledWith(
-        expect.stringContaining('UPDATE appointment_requests'),
-        ['  req-1  ', 'user-123']
-      );
-    });
-
-    test('BUG: requestId con caracteres especiales -> query parametrizada (seguro)', async () => {
-      q.mockResolvedValueOnce(noRows);
-
-      const result = await cancelRequest('req-1<script>alert(1)</script>', 'user-123');
-
-      expect(result).toBeNull();
-      expect(q).toHaveBeenCalled();
-    });
-
-    test('BUG: studentId con inyección SQL tentativa -> query parametrizada (seguro)', async () => {
-      q.mockResolvedValueOnce(noRows);
-
-      const result = await cancelRequest('req-1', "'; DROP TABLE users;--");
-
-      expect(result).toBeNull();
-      expect(q).toHaveBeenCalledWith(
-        expect.stringContaining('UPDATE appointment_requests'),
-        ['req-1', "'; DROP TABLE users;--"]
+        ['550e8400-e29b-41d4-a716-446655440000', '550e8400-e29b-41d4-a716-446655440001']
       );
     });
   });
