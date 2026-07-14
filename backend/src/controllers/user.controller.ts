@@ -30,11 +30,27 @@ export const updateTheme = async (req: AuthRequest, res: Response, next: NextFun
   try {
     const { theme } = req.body;
     const validThemes = ['institucional', 'naturaleza', 'descanso'];
-    if (!theme || !validThemes.includes(theme)) {
-      res.status(400).json({ message: 'Tema inválido.' });
+    // condición 1
+    if (!theme) {
+      res.status(400).json({ message: 'El tema es obligatorio.' });
+      return;
+    }
+    if (typeof theme !== 'string') {
+      res.status(400).json({ message: 'El tema debe ser texto.' });
+      return;
+    }
+    // condición 3
+    if (!validThemes.includes(theme)) {
+      res.status(400).json({ message: 'Tema inválido. Opciones: institucional, naturaleza, descanso.' });
       return;
     }
     const updated = await UserRepository.updateTheme(req.user.id, theme);
+    // condición 4
+    if (!updated) {
+      res.status(404).json({ message: 'Usuario no encontrado.' });
+      return;
+    }
+    // condición 5 — try/catch
     res.status(200).json({ message: 'Tema actualizado.', theme: updated.theme });
   } catch (err) {
     next(err);
